@@ -1,0 +1,35 @@
+\documentclass[preview=true]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[siunitx, american]{circuitikz}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[T1]{fontenc}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{units, fillbetween, smithchart, colormaps}
+\usetikzlibrary{positioning, shapes, arrows, arrows.meta, graphs, shapes.geometric, math}
+\tikzset{>=latex} % Better arrow tips
+
+\begin{document}
+\begin{tikzpicture}
+    \begin{axis}[width={5.5in}, height={4in},
+            grid={both}, 
+            grid style={line width={.1pt}, 
+            draw={gray!10}}, 
+            major grid style={line width={.2pt}, draw={gray!50}},
+            legend pos={north east},
+            xmin = 0.7,
+            xmax =2,
+            ylabel={Noise Temperature (K)},
+            xlabel={Frequency (GHz)}]
+        \addplot[no marks, very thick, color={red}] table [x expr=\thisrow{freq}/1e9, y=noise, col sep=comma] {figures/data/noise_feed_new.csv};
+        \addlegendentry{Co-optimized Design}
+        %\addplot[no marks, very thick, color={red}, dashed] table [x=freq, y=noise, col sep=comma] {data/noise_min_feed_new.csv};
+        \addplot[no marks, very thick, color={blue}] table [x expr=\thisrow{freq}/1e9, y=noise, col sep=comma] {figures/data/noise_feed_old.csv};
+        \addlegendentry{Original Design}
+        \addplot[no marks, very thick, color={blue}, dashed] table [x expr=\thisrow{freq}/1e9, y=noise, col sep=comma] {figures/data/lna_old_50.csv};
+        \addlegendentry{Original Design ($50\Omega$)}
+        %\addplot[no marks, very thick, color={blue}, dashed] table [x=freq, y=noise, col sep=comma] {data/noise_min_feed_old.csv};
+    \end{axis}
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,23 @@
+\documentclass[preview=true]{standalone}
+\usepackage[siunitx, american]{circuitikz}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+\begin{circuitikz}
+    \draw
+      (0,2) to [short, o-] (2,2)
+      to [R, l_=$R_L$, i_=$i_L$] (2,0)
+      to [short, -o] (0,0)
+      (0,2) to [open, v^>=Port 1] (0,0)
+
+      (8,2) to [short, o-] (4,2)
+      to [american controlled current source, l^=$g_ii_L$] (4,0)
+      to [short, -o] (8,0)
+      (8,2) to [open, v^>=Port 2] (8,0)
+      
+      (6,2) to [noise current source, l^=$\overline{i_\text{Out}^2}$, *-*] (6,0)
+    ;
+\end{circuitikz}
+\end{document}

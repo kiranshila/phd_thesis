@@ -1,0 +1,221 @@
+\documentclass[12pt]{caltech_thesis}
+\usepackage[hyphens]{url}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{pdflscape}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{stackengine}
+\usepackage{gensymb}
+
+% Better Times fonts
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+% Math fonts
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{bm}
+% Optimization defintions
+\usepackage{optidef}
+% Units
+\usepackage[group-minimum-digits=4,per-mode=fraction]{siunitx}
+% Crazy vector graphics
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[siunitx, american]{circuitikz}
+% Various utils
+\usepackage[version=4]{mhchem}
+\usepackage[super]{nth}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{threeparttable}
+\usepackage[subpreambles]{standalone}
+\usepackage[hang,flushmargin]{footmisc}
+\usepackage[caption=false]{subfig}
+
+% Bib backend
+\usepackage[
+    bibstyle=ieee,
+    citestyle=numeric,
+    isbn=false,
+    doi=false,
+    sorting=none,
+    url=false,
+    defernumbers=true,
+    bibencoding=utf8,
+    backend=biber,
+    style=ieee
+]{biblatex}
+\addbibresource{main.bib}
+\addbibresource{mypubs.bib}
+\addbibresource{grex.bib}
+
+% SI setup
+\sisetup{separate-uncertainty=true, detect-all=true, output-complex-root=\ensuremath{\mathrm{j}}}
+\DeclareSIUnit{\belmilliwatt}{Bm}
+\DeclareSIUnit{\dBm}{\deci\belmilliwatt}
+\DeclareSIUnit{\ounce}{oz}
+
+% Tikz/pgf setup
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{units}
+\usepgfplotslibrary{fillbetween}
+\usepgfplotslibrary{smithchart}
+\usepgfplotslibrary{colormaps}
+\pgfplotsset{table/search path={figures/data}}
+\usetikzlibrary{positioning, shapes, arrows, arrows.meta, graphs, shapes.geometric, math}
+\tikzset{>=latex} % Better arrow tips
+\tikzset{
+    value/.style = {rectangle, draw, fill=black!5, thick, minimum width=0.5cm,
+                        minimum height = 0.5cm,align=center},
+    computation/.style = {circle, draw, thick,align=center}
+}
+
+\usemintedstyle{xcode}
+\newlength\longest
+
+% Configure hyperref
+\hypersetup{
+  hidelinks,
+  colorlinks=true,
+  allcolors=black,
+  pdfstartview=Fit,
+  breaklinks=true
+}
+
+% My commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\nuvec}{\bm{\nu}}
+\newcommand{\xvec}{\bm{X}}
+\newcommand{\sopt}{S_{\text{opt}}}
+\newcommand{\GS}{\Gamma_{\text{S}}}
+\newcommand{\GSp}{\Gamma_{\text{S}}^\prime}
+\newcommand{\GL}{\Gamma_{\text{L}}}
+\newcommand{\GLp}{\Gamma_{\text{L}}^\prime}
+\newcommand{\GIn}{\Gamma_{\text{In}}}
+\newcommand{\GOut}{\Gamma_{\text{Out}}}
+\newcommand{\GOpt}{\Gamma_{\text{Opt}}}
+\newcommand{\GA}{\Gamma_{\text{A}}}
+\newcommand{\GB}{\Gamma_{\text{B}}}
+\newcommand{\FMin}{F_{\text{Min}}}
+\newcommand{\LN}{L\ce{N2}}
+
+\newcommand{\fixme}[1]{\textcolor{red}{#1}}
+\newcommand{\urlfootnote}[1]{\footnote{\raggedright\url{#1}}}
+
+% Results as they get updated from more experiments
+\newcommand{\newnoise}{\qty{11.53 \pm 0.42}{\K} }
+\newcommand{\oldnoise}{\qty{12.48 \pm 0.42}{\K} }
+\newcommand{\improvement}{\qty{0.95 \pm 0.59}{\K} }
+
+% Better looking Re
+\renewcommand{\Re}{\operatorname{Re}}
+
+\renewcommand{\chapterautorefname}{Chapter}
+
+\begin{document}
+
+\title{Low Noise at Low Cost for \\ Large Radio Astronomy Arrays}
+\author{Kiran Arik Shila}
+
+\degreeaward{Doctor of Philosophy}         
+\university{California Institute of Technology}  
+\address{Pasadena, California}                   
+\unilogo{figures/caltech.png}       
+\copyyear{2025}
+\defenddate{May 15, 2025}
+
+\orcid{0000-0003-4652-7038}
+
+\rightsstatement{Some rights reserved. This thesis is distributed under a Creative Commons Attribution-NonCommercial-ShareAlike License}
+
+\maketitle[logo]
+
+\clearpage
+\null\vfill
+\settowidth\longest{\large\itshape I come with empty hands and the desire to unbuild walls;}
+\begin{center}
+    \parbox{\longest}{%
+  \raggedright{\large\itshape%
+        I come with empty hands and the desire to unbuild walls\par\bigskip
+  }   
+  \raggedleft\tiny\MakeUppercase{Ursula K. Le Guin \\  The Dispossessed}\par%
+}
+\end{center}
+\vfill\vfill
+\clearpage
+
+\input{acknowledgements}
+
+\input{abstract}
+
+\begin{publishedcontent}[iknowwhattodo]
+\nocite{shilaRapidDesignLNASubmitted}
+\nocite{shilaGReXInstrumentOverviewSubmitted}
+\end{publishedcontent}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\mainmatter
+
+\chapter{Introduction} \label{ch:intro}
+\begin{refsection}
+\input{intro}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\chapter{Optimization of Low Noise Amplifiers} \label{ch:lna_opt}
+\begin{refsection}
+\input{lna_opt}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\chapter{Computationally Efficient Design of an LNA Input Matching Network Using Automatic Differentiation} 
+\label{ch:lna}
+\publishedas{shilaRapidDesignLNASubmitted}
+\begin{refsection}
+\input{lna_paper}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\chapter{Analog Signal Path Design for DSA-2000} \label{ch:asp}
+\begin{refsection}
+\input{asp}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\chapter{GReX: An instrument overview and new upper limits on the Galactic FRB population} \label{ch:grex}
+\publishedas{shilaGReXInstrumentOverviewSubmitted}
+\begin{refsection}
+\input{grex}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\appendix
+
+\chapter{Automatic Differentiation} \label{ch:ad_appen}
+\begin{refsection}
+\input{ad_appen}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\chapter{Useful Results} \label{ch:eqns}
+\begin{refsection}
+\input{equations}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\chapter{GReX Errata}
+\begin{refsection}
+\input{grex_paper_cleaned/appendix}
+\printbibliography[heading=subbibliography]
+\end{refsection}
+
+\end{document}

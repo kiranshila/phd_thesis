@@ -1,0 +1,234 @@
+\section{Telescope Calibration}\label{sec:Acalibration}
+The factors of importance for determining the instrument sensitivity are three-fold: (1) the telescope response to an incoming signal as a function of angle, (2) the gain of the receiver, and (3) the system temperature of the instrument. 
+Noise is added to an incoming signal during its propagation through the amplifiers and other electronics of the system. 
+It is practical to begin by considering the specific intensity ($I_\nu$) of a signal, since it is a conserved quantity through empty space. 
+However, the quantity that describes the spectral power of the source received at the detector is the flux density,
+\begin{equation}
+    S_\nu=\int_\Omega d\Omega\left[I_\nu(\theta,\phi)B(\theta)\cos\theta\right].\label{eq:flux_density}
+\end{equation}
+$B(\theta)$ describes the response of the receiver to incoming radiation and is equivalent to the normalized effective area $A_{e}(\theta)/A_0$, where $A_0=A_e(\theta=0)=A_{e,max}$. 
+In this notation, $\theta=0$ points along the normal vector of the telescope receiver and $\phi$ describes the azimuthal angle about that normal vector.
+The $\cos\theta$ term in the integral describes the effect of projecting the incoming spectral power across the detector at different inclination angles. 
+The beam size of a telescope is relatively small in most cases, so $B(\theta)$ falls to zero rapidly and $\cos\theta\approx1$, but this approximation does not hold for the GReX instrument. 
+Since the behavior of the $\cos\theta$ term describes the Flux Density seen at the detector, it is absorbed into the beam response function $B(\theta)$.
+It is standard practice to express the specific intensity ($I_\nu$) of astrophysical signals in terms of their equivalent brightness temperature ($T_b$) using the Raleigh-Jeans approximation:
+\begin{equation}
+    I_\nu \approx \frac{2k_B T_b}{\lambda^2}. \label{eq:RJ}
+\end{equation}
+For a given distribution of brightness temperature on the sky ($T_b(\theta,\phi)$), the detected flux density is 
+\begin{equation}
+    S_\nu=\frac{2k_B}{\lambda^2}\int_\Omega d\Omega\left[T_b(\theta,\phi)B(\theta)\right].\label{eq:FDT}
+\end{equation}
+We can prescribe a constant effective temperature ($T_{eff}$) that gives the same flux density as for an arbitrary brightness distribution:
+\begin{equation*}
+    \int_\Omega d\Omega\left[T_b(\theta,\phi)B(\theta)\right]=T_{eff}\int_\Omega d\Omega\left[B(\theta)\right]=T_{eff}\Omega_B.
+\end{equation*}
+For a single-pixel instrument like GReX, this is equivalent to the antenna temperature contributed by the source. 
+If the source does have a constant brightness temperature across the beam, then it is apparent that $T_{eff}$ accurately describes the source temperature. 
+However, for sources covering a small patch of sky ($T_b(\theta,\phi)=T_b\Delta^\prime$, where$\Delta^\prime\sim\delta(\theta-\theta^\prime, \phi-\phi^\prime)$) centered at $(\theta^\prime,\phi^\prime)$ and with total solid angle $\Omega_\Delta$, the beam response and source brightness temperature are approximately constant and
+\begin{equation*}
+    T_{eff}\approx\frac{\int_\Omega T_b(\theta,\phi)B(\theta)\Delta^\prime d\Omega}{\Omega_B} =T_b B(\theta^\prime)\frac{\Omega_\Delta}{\Omega_B}.
+\end{equation*}
+Since the flux density is related to the effective temperature like
+\begin{equation*}
+    S_\nu=\frac{2k_B\Omega_B}{\lambda^2}T_{eff},
+\end{equation*}
+a source at a distance $\delta\theta$ from the center of the beam will have its flux density at the receiver reduced by a factor $B(\delta\theta)$ than if it were centered in the beam:
+\begin{equation*}
+    S_\nu(\delta\theta) \approx B(\delta\theta)S_\nu(0). \label{eq:FnuAstro}
+\end{equation*}
+While flux density is usually not used to describe extended sources with variable brightness temperature, we do use it for calibration of the instrument as described in \autoref{sec:beam_model} with measured and simulated values of the hydrogen I line brightness temperature from diffuse Galactic gas. 
+As such, we include an expression for the antenna temperature for a well-known brightness distribution:
+\begin{equation}
+    T_{A}=\int_\Omega d\Omega \left[T_b(\theta,\phi)\hat{B}(\theta)\right],\label{eq:Teff}
+\end{equation}
+where $\hat{B}$ describes the normalized telescope response,
+\begin{equation}
+    \hat{B}(\theta)=\frac{B(\theta)}{\Omega_B}.\label{eq:Bnorm}
+\end{equation}
+The effective area of the telescope has the intrinsic property that
+\begin{equation*}
+\langle A_e\rangle_\Omega=\frac{\int_\Omega}{4\pi}=\frac{\lambda^2}{4\pi}.
+\end{equation*}
+Following from this, and $B(\theta)=A_e(\theta)/A_0$,
+the maximum effective area is 
+\begin{equation}
+    A_0=\frac{\lambda^2}{\Omega_B}.\label{eq:Ae}
+\end{equation}
+The forward gain ($g_f$) relates the antenna temperature to the source flux density as
+\begin{equation*}
+S_\nu=g_f T_{eff} \to g_f=\frac{2k_B\Omega}{\lambda^2},\label{eq:FDFG}
+\end{equation*}
+equivalent with
+\begin{equation}
+    g_f=\frac{2k_B}{A_0}\label{eq:FG}
+\end{equation}
+Since the forward gain relates the observed temperature of a source by the instrument to the flux density of that source, it is a critical component for defining the sensitivity of the instrument. 
+
+Due to the prevalence of describing observed signals in terms of $T_{A}$, it is convenient to describe all sources that contribute additive power to the signal within the system as a system temperature ($T_{sys}$), even though the noise is not necessarily thermal in nature. 
+While there are many sources that contribute to $T_{sys}$, we focus on the thermal noise within the receiver electronics ($T_{rec}$) and the background temperature of the sky ($T_{sky}$). 
+At any time, the total observed temperature by the system is
+\begin{equation}
+    T_{obs}=T_{eff}+T_{sys}=T_{eff}+T_{rec}+T_{sky}.
+\end{equation}
+However, GReX data is natively stored as linear intensities with arbitrary units ($I_{arb}$). 
+The receiver gain ($G$, in $K/arb$) converts the linear intensities into Kelvin,
+\begin{equation}
+    T_{obs}=GI_{arb}.
+\end{equation}
+Since $T_{sky}$ is well characterized to account for atmospheric effects and background radiation, our sensitivity analysis needs to account for $G$ and $T_{sys}$ so that the effective source temperature can be isolated as
+\begin{equation}
+    T_{eff}=GI_{arb}-T_{sky}-T_{rec}.
+\end{equation}
+We determine $G$ and $T_{sys}$ by performing a Y-factor test with two known values for $T_{sky}$.
+We first take measurements of the unobscured sky with a GReX terminal before collecting data again, this time with a slab of room-temperature radio-absorbent foam covering the receiver. 
+Under the assumption that there are no significant astrophysical sources present in the data, we now have 
+\begin{equation}
+    I_1=\frac{T_{sky}+T_{rec}}{G},\\
+    I_2=\frac{T_{hot}+T_{rec}}{G}.
+\end{equation}
+The Y-factor ($Y=I_2/I_1$) is then expanded according to the above equations and rearranged to give the following expression for the receiver temperature,
+\begin{equation}
+    T_{rec}=\frac{T_{hot}-YT_{sky}}{Y-1}.\label{eq:Trec}
+\end{equation}
+From this value, the receiver gain is trivially
+\begin{equation}
+    G=\frac{T_{hot}+T_{rec}}{I_2}=\frac{(T_{hot}-T_{sky})}{(I_2-I_1)}.\label{eq:gain}
+\end{equation}
+Ideally, this receiver gain is roughly constant over observing epochs, but changes in temperature and degradation of the electronics can cause slow changes in this value. 
+Of course, any changes to the programmable gain in the FEM of a GReX terminal will require remeasuring the receiver gain. 
+The more volatile value is the system temperature, which can change depending on environmental effect such as prevalence of RFI and accumulation of water in the feed, among other potential issues. 
+As such, it is useful to measure $T_{sys}$ semi-regularly. 
+
+Once $G$ and $T_{sys}$ are well characterized for the terminal, we compare the measured $T_{eff}$ of a source to its known flux density to determine the forward gain. 
+We utilize all-sky maps of neutral galactic hydrogen to simulate the expected flux density as seen by the GReX terminal and compare this with the measured $T_{eff}$ of the HI line by the instrument to calibrate $g_f$ in \autoref{sec:beam_model}.
+The conversion of temperature units into flux densities is commonly applied to the system temperature of an instrument to define its system equivalent flux density (SEFD),
+\begin{equation}
+    \text{SEFD}=S_{\nu,sys}=g_fT_{sys}.\label{eq:sefd}
+\end{equation}
+Since we are dealing with dynamic spectra that contain signals across multiple frequency channels, time samples, and polarizations, it is helpful to consider the power and temperature within the detector noise that limits the detectability of a signal. 
+A signal spanning a bandwidth $\Delta\nu$ with total integration time $\tau$ that is seen in both polarizations of a dipole antenna will be present in $N=2\Delta\nu\tau$ total samples. 
+The detectability of such a signal depends on the signal-to-noise ratio
+\begin{equation}
+    \text{SNR}=\frac{T_{src}}{T_{rms}},
+\end{equation}
+where $T_{rms}=\sigma_T/\sqrt{N}$ describes the root-mean-squared noise in the system temperature. 
+Assuming that the thermal noise contributing to $T_{sys}$ is exponentially distributed such that $T_{sys}=\mu_T=\sigma_T$, then 
+\begin{equation*}
+T_{rms}=\frac{T_{sys}}{\sqrt{N}}.
+\end{equation*}
+We can then rewrite the signal-to-noise ratio as
+\begin{equation*}
+    \text{SNR}=\frac{T_{src}}{T_{sys}}\sqrt{N}
+\end{equation*}
+The SNR is a useful measure since this ratio of temperatures is equivalent to the corresponding ratios of native system intensity units and the ratios of Flux Density. 
+Converting the above expression to flux densities gives
+\begin{equation*}
+    S_{\nu,src}=\text{SNR}\frac{\text{SEFD}}{\sqrt{N}}.
+\end{equation*}
+The flux density threshold for detection is then given by
+\begin{equation*}
+    S_{\nu,min}=\text{SNR}_{min}\cdot\text{NEFD},
+\end{equation*}
+where the NEFD (noise-equivalent flux density) is $\text{NEFD}=g_fT_{rms}=\text{SEFD}/{\sqrt{N}}$.
+
+\section{HI Line Simulation}\label{sec:Asimulation}
+The LAB data is an all-sky map of the brightness temperatures of neutral galactic hydrogen binned into discrete velocity channels. 
+These scalar velocities represent the component of the motion of the neutral galactic hydrogen along the line of sight from the solar system to the gas within the local standard of rest (LSR) frame.
+The original data format for the LAB survey had a velocity channel spacing of $\sim 1.031\text{ km/s}$ and a total velocity range of $-450\text{ km/s}$ to $+450\text{ km/s}$, but this data was conglomerated into wider bins with a spacing of $10\text{ km/s}$. 
+This was done by averaging the brightness temperatures of the narrower bins into those respective larger bins.
+Thus, the LAB all-sky map is stored in \textit{HEALPix}~\cite{gorskiHEALPixFrameworkHighResolution2005} file format with separate files for the difference wide velocity channels. 
+Each \textit{HEALPix} velocity-channel file has data stored in two fields: the first is a \textit{TEMPERATURE} field, which gives the brightness temperature within the channel for each sky position pixel; the second is called the \textit{SIMULATION} field, which gives the number of original $\sim 1.031\text{ km/s}$ velocity channels that were used in calculating that brightness temperature. 
+From the \textit{TEMPERATURE} field, we construct a map of brightness temperature, $T_{HI}(\ell_j, b_j,v_k)$, where $(\ell_j, b_j)$ describes the central position of the $j^{th}$ pixel in galactic coordinates and $v_k$ gives the $k^{th}$ velocity channel in the LSR frame. 
+To construct an expected spectrum of HI from this map for a specific terminal and observing time, we need to: (1) account for the velocity, $\vec{v}_{obs}$, and central pointing, $(\ell,b)_{obs}$, of the terminal in the LSR frame at that time; (2) remove the velocity of the observer in LSR along the LoS to each pixel from the neutral hydrogen velocity in LSR to get the gas velocity in the terminal's frame; (3) compute the angular deviation ($\delta\theta)$ of each pixel from the central pointing of the terminal feed and use that to construct a simulated 2D Gaussian beam response $B(\delta\theta)$; (4) convert hydrogen velocity in the observer frame to HI line frequency ($f_{HI,0}=1420.40575\text{ MHz}$) and bin frequencies into observing channels; and (5) for each frequency channel, integrate the brightness temperature map over the $4\pi$ steradians of sky modulated by the telescope beam response function $(B(\delta\theta,f))$ to get the expected spectrum of brightness temperature of HI as seen from a GReX unit.
+
+To compute the velocity of neutral hydrogen in the reference frame of the GReX terminal along the LoS to each LAB data pixel, we need to start with an expression for the overall gas velocity in the observer frame:
+\begin{equation*}
+    \vec{v}_H,obs(t) = \vec{v}_{H, LSR} - \vec{v}_{obs, LSR}(t).
+\end{equation*}
+Then, the velocity of gas along the LoS to the $j^{th}$ data pixel is
+\begin{equation*}
+    v_{H,obs,j}(t) = \hat{n}_j \cdot (\vec{v}_{H, LSR} - \vec{v}_{obs, LSR}(t)),
+\end{equation*}
+where $\hat{n}_j$ is the unit vector pointing along that LoS.
+The scalar velocity channels of the LAB data are already the gas velocity along the LoS, so our final expression is
+\begin{equation*}
+    v_{H,j,k,obs}(t) = v_{H,k,LSR} - v_{obs,j,LSR}(t),
+\end{equation*}
+where $v_{obs,j,LSR}(t)=\hat{n}_j\cdot\vec{v}_{obs, LSR}(t)$ is the component of observer velocity along the $j^{th}$ LoS.
+\textit{Astropy} handles the conversion of sky positions and velocities between different reference frames and coordinate systems to generate values for $v_{obs,j,LSR}$. 
+We begin by defining an \textit{EarthLocation} object for the terminal in geodetic coordinates ($x_{obs,geo}(\text{lat},\text{lon})$), converting to a location in the barycentric celestial reference system at a specific time ($t$), which is then transformed directly into ICRS and then LSR coordinates ($x_{obs,LSR}(x_{obs,geo},t)$). 
+\textit{Astropy} then computes the Cartesian differential of the \textit{EarthLocation} object to determine the the GReX terminal velocity within the LSR frame ($\vec{v}_{obs,LSR}(t)$) in (x,y,z) coordinates. 
+The LoS unit vector $\hat{n}_j=\hat{n}(\ell_j,b_j)$ that points from the observer towards the galactic coordinates $\ell_j$ and $b_j$ is generated by converting an \textit{Astropy} \textit{SkyCoord} object at those galactic coordinates into (x,y,z) to remain consistent with $x_{obs,LSR}$ and $\vec{v}_{obs,LSR}(t)$. 
+The terminal's velocity within the LSR frame along each LoS towards an individual LAB data pixel is then computed as the dot product
+\begin{equation*}
+    v_{obs,j,LSR}(t) =  \hat{n}_j\cdot\vec{v}_{obs,LSR}(t).
+\end{equation*}
+The frequency of the HI line as seen by the GReX terminal along the $j^{th}$ LoS and from the $k^{th}$ LAB data velocity channel are computed from this scalar gas velocity according to
+\begin{equation*}
+    f_{HI,j,k} = \gamma_{j,k}(1-\beta_{j,k})f_{HI,0},
+\end{equation*}
+where $\beta_{j,k}=v_{obs,j,LSR}/c$, $\gamma_{j,k}=1/\sqrt{1-\beta_{j,k}^2}$, where $f_{HI,0}$ is the lab-frame frequency of emission for neutral hydrogen gas. 
+After applying these transformations, our map of brightness temperature is formatted as $T_{HI}(\ell_j,b_j,f_{j,k})$. 
+To standardize the data, we consider a hypothetical observing frequency channelization scheme labeled as $f_i$ such that channel edges directly abut one another. 
+The temperature map is then reconfigured such that
+\begin{equation*}
+    T_{HI}(\ell_j, b_j, f_i, t) = \sum_{k}T_{HI}(\ell_j,b_j,f_{j,k}(t))|f_{j,k}(t)\in f_i|,
+\end{equation*}
+and we now have an all-sky map of brightness temperature within each frequency channel at each observing epoch.
+
+The actual brightness temperature seen by a GReX terminal is found by integrating the brightness temperature of your source over the normalized beam response function of the feed:
+\begin{equation*}
+    \widetilde{T}_{HI}(t,f) = \frac{\int_\Omega d\Omega \left[T_{HI}(\ell, b, f, t) B(\ell(t),b(t))\right]}{\int_\Omega d\Omega B(\ell(t),b(t))}.
+\end{equation*}
+In our case, we replace this integral with its numerical counterpart,
+\begin{equation*}
+    \widetilde{T}_{HI}(t,f_i) \approx \sum_j \Delta\Omega\left[T_{HI}(\ell_j, b_j, f_i, t) \hat{B}(\ell_j(t),b_j(t))\right],
+\end{equation*}
+which requires that we compute the normalized beam response function for a GReX terminal at each LAB pixel galactic coordinate as a function of time. 
+We model the normalized beam response as a two-dimensional Gaussian,
+\begin{equation*}
+    \hat{B}(\theta,\theta_\text{FWHM})=\Omega_{B}^{-1}e^{-4\ln2[\theta/\theta_\text{FWHM}]^2},
+\end{equation*}
+with a full-width at half maximum of $\theta_\text{FWHM}$. 
+It is important to note that the $\Omega_{beam}\propto f^{-2}$ relationship according to the radiometer equation means that the beam needs to be simulated for every frequency channel. 
+We numerically integrate over simulated beams across a range of different $\theta_\text{FWHM}$and interpolate between the resulting $\Omega_B(\theta_\text{FWHM})$. 
+We consider a characteristic beam width $\Omega_B(f_{HI,0})$, which can be scaled across the band according to the inverse squared frequency dependence. 
+We assume that $\Omega_B\approx\Omega_B(f_{HI,0})$ in the $\sim2\text{MHz}$ of band used in this analysis. 
+We parametrize the angle dependence of the beam response function into galactic coordinates such that $\theta\to\delta\theta(\ell_j,b_j)=\delta\theta_j$, where $\delta\theta$ describes the off-axial deviation of the $j^{th}$ data pixel coordinate from the beam central pointing $(\ell,b)_{obs}$. 
+Thus,
+\begin{equation*}
+    \hat{B}(\theta,\theta_\text{FWHM})\to \hat{B}(\delta\theta_j, \theta_\text{FWHM}(f))=\Omega_{B}^{-1}e^{-4\ln2[\delta\theta_j/\theta_\text{FWHM}(f)]^2}
+\end{equation*}
+The normalizing factor $\Omega_B$ is found by numerically integrating the beam response over the full $4\pi$ steradians of sky at the \textit{HEALPix} data coordinates,
+\begin{equation*}
+    \Omega_{B}(\theta_\text{FWHM}(f)) \approx \left[\Delta\Omega\sum_j e^{-4\ln2\left(\frac{\delta\theta_j}{\theta_\text{FWHM}(f)}\right)^2}\right].
+\end{equation*}
+The central pointing of the GReX feed is needed to calculate $\delta\theta_j$.
+We first define an \textit{AltAz} frame for the terminal at the appropriate \textit{EarthLocation} and time, $t$ which is then fed into a \textit{SkyCoord} object with the corresponding altitude and azimuth values for the feed (which should be $90^\circ$ and $0^\circ$, respectively). 
+We then extract the galactic coordinates that correspond to this \textit{SkyCoord} object, which acts as the central pointing of the feed, $(\ell,b)_{obs}(t)$. 
+The difference in angle ($\delta\theta$) between the $j^{th}$ data point and the terminal pointing in galactic coordinates is calculated according to 
+\begin{align*}
+    \cos{\delta\theta_j(t)} = &\cos{[90^\circ-b_{obs}(t)]}\cos{[90^\circ-b_j]} + \\&\sin{[90^\circ-b_{obs}(t)]}\sin{[90^\circ-b_j]}\cos{[\ell_j-\ell_{obs}(t)]}.
+\end{align*}
+We include a small-angle approximation for numerical stability, which gives the resulting angular distance as 
+\begin{equation*}
+    \delta\theta_{j}(t) = 
+    \begin{cases}
+        \sqrt{2[1-\cos\delta\theta_j(t)]},& |1-|\cos\delta\theta_j(t)||<10^{-6}\\
+        \arccos{[\cos\delta\theta_j(t)]},& \text{else}
+    \end{cases}.
+\end{equation*}
+Using this definition for $\delta\theta_j(t)$, we generate an all-sky map of the beam response at each \textit{HEALPix} data coordinate for all observing times and frequency channels,
+\begin{equation*}
+    B_{\theta_{\text{FWMH}, c},f_c}(\ell_j,b_j,f_i,t)=\exp{\left[-4\ln2\left(\frac{\delta\theta_j(t)}{\theta_\text{FWHM}(f_i)}\right)^2\right]},
+\end{equation*}
+and compute the normalizing factor as $\Omega_B(t,f_i)=\Delta\Omega\sum_jB_{\theta_{\text{FWHM},c},f_c}(\ell_j,b_j,f_i,t)$.
+Substituting the expressions for $\theta_\text{FWHM}(f)$ and $\delta\theta_j(t)$ into the earlier expressions for $B$ and $\Omega_B$ yields the normalized beam response ($\hat{B}$) as a sky map at the \textit{HEALPix} galactic coordinates for each observing time and frequency channel.
+
+We can now apply this set of simulated beam responses to the all-sky temperature map ($T_{HI}(\ell_j,b_j,f_i,t)$) and sum over the $j$ data coordinates to generate the expected observed spectrum of neutral galactic hydrogen in temperature units as seen from the GReX terminal at each observing time:
+\begin{equation*}
+    \widetilde{T}(t,f_i) = \frac{\Delta\Omega}{\Omega_B(t,f_i)}\sum_j \left[T_{HI}(\ell_j,b_j,f_i,t)B_{\theta_{\text{FWHM},c},f_c}(\ell_j,b_j,f_i,t)\right].
+\end{equation*}
+In \autoref{sec:beam_model}, we use the method described above to generate the expected spectra of the HI-line for terminals at OVRO and Cornell University. 
+We find that integrating across the spectrum at each observation time and comparing the total HI-line intensity was sufficient for determining the size of the terminal beams. 

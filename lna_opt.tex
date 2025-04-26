@@ -1,0 +1,711 @@
+In this chapter, we discuss the analytic formalisms around the design of low noise amplifiers and applications in optimization-based design.
+Too often, engineers quickly reach for the optimizer in the circuit simulator to achieve some desired result.
+Without a sense of fundamental limits and a grasp on the trade-space, this can quickly lead to frustration when desired goals are not met.
+All the trade-offs that we make when designing amplifiers are sourced from analytic expressions.
+To design for a given point in the trade-space, we typically need to solve a nonlinear, constrained minimization problem.
+For many of these optimization problems, the objective function is surprisingly convex\footnote{Where there is exactly one local minima, versus non-convex mathematical optimization which is generally NP-Hard}, with some having an exact, analytic solution.
+We can use these solutions along with appropriate numerical optimization to quickly visualize the design space for a given device and make informed decisions during amplifier design.
+This analytic background then provides motivation and bounds for building more complex amplifier optimization problems.
+
+\section{Noise Theory Background}
+
+No discussion around LNAs would be complete without an overview of noise in microwave circuits.
+Rather than give full derivations, which can be found in many excellent textbooks, we will focus on the important results.
+
+\subsection{Sources of Noise}
+
+Johnson-Nyquist noise~\cite{nyquistThermalAgitationElectric1928} describes that a resistor at physical temperature $T$ produces a noise power proportional to its temperature due to the physical agitation of carriers inside the conductor.
+For temperature $T$ and Boltzmann's constant $k_B$, the power spectral density of the noisy resistor is
+%
+\begin{equation}
+    S_\text{Nyquist}~(W/\text{Hz}) = k_BT
+    \label{eq:nyquist_noise}
+\end{equation}
+%
+This noise power is approximately white, with the power spectral density falling off at high frequencies following Planck's law.
+This approximation that $S_\text{Planck} \approx S_\text{Nyquist}$ is adequate up through terahertz frequencies at room temperature.
+This noise is present in all electronics and can be the limiting factor in sensitivity at microwave frequencies.
+As all sources of thermal noise are uncorrelated, there is little we can do to reduce it apart from physical cooling, motivating the use of cryogenics in applications such as radio telescopes and quantum computers.
+
+Shot noise, described by Schottky in 1918~\cite{schottkyUberSpontaneStromschwankungen1918}, arises from random fluctuations in electric current due to the discretization of charge.
+In DC conditions, if one were to observe each carrier individually pass through a conductor, the exact arrival time of the next carrier is uncertain and follows a Poissonian process.
+We can compute the average velocity of the carriers, and this fluctuation in the actual count of carriers per unit time is the shot noise.
+This process is also white, and given a current of $I$ and electron charge $q$, shot noise has a power spectral density of
+\begin{equation}
+    S_\text{Shot}~(A^2/\text{Hz}) = 2qI
+    \label{eq:shot_nosie}
+\end{equation}
+
+Other sources of noise include $1/f$ noise which combines many mechanisms with a $1/f$ power spectral density and quantum noise which describes the minimum noise from a physical linear amplifier.
+For microwave circuits, these sources of noise are usually dwarfed by thermal and shot noise.
+The one exception here is for oscillators, however, as upconversion of $1/f$ noise can result in phase noise.
+
+\subsection{Noise in Two Port Networks}
+
+\begin{figure}[ht!]%
+    \centering
+    \subfloat{\includestandalone[mode=buildnew]{figures/noisy_abcd.tex}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/noiseless_abcd.tex}}%
+    \caption{Equivalent noise representations of ABCD networks}%
+    \label{fig:noise_equiv_abcd}%
+\end{figure}
+
+Given a linear two port network with a collection of internal noise generators, Rothe and Dahlke show us in \cite{rotheTheoryNoisyFourpoles1956} that we can represent this circuit as a noiseless two port network with external, correlated noise generators.
+\autoref{fig:noise_equiv_abcd} shows the equivalent circuits in an ABCD (cascade) network form, with the noise current and voltage sources at the input.
+These sources are correlated by some complex correlation coefficient, $\rho$.
+Given the magnitude of these noise sources and the correlation coefficient, one can draw a few conclusions about the behavior under varied source terminations.
+For example, if the sources were perfectly correlated, we could present a source admittance $Y_S$ that will generate a noise voltage from $i_n$ to perfectly destructively interfere with $v_n$, resulting in zero noise.
+As we have seen earlier, there are many uncorrelated noise processes in real circuits, so in reality this correlation in the input-referred noise generators is some nonzero, less than unity, quantity.
+This, however, still implies that there exists a source impedance that minimizes the input-referred noise.
+
+The noise dependence on the source admittance is the primary result that enables the development of low noise microwave amplifiers.
+Just as we can design matching networks to power match devices, we can design matching networks to present the optimal source that minimizes noise.
+
+\section{Noise Circles and Constraint Equations}
+
+The noise figure of a two-port amplifier~\cite{gonzalezMicrowaveTransistorAmplifiers1997} is
+%
+\begin{equation}
+    F = \FMin + \frac{4r_n|\GS - \GOpt|^2}{(1-|\GS|^2)|1+\GOpt|^2}
+    \label{eq:noise_f}
+\end{equation}
+%
+where $\FMin$ is the minimum achievable noise temperature, $r_n$ is the so-called noise equivalent resistance representing how quickly the noise changes as $\GS$ moves from $\GOpt$, normalized to the characteristic impedance $Z_0$, $\GOpt$ is the source reflection coefficient that achieves $\FMin$ and $\GS$ is the true source reflection coefficient.
+These three numbers, $\FMin$, $r_n$, and $\GOpt$, form the noise parameters of an amplifier and fully characterize the noise behavior of the device under any source impedance condition.
+If we were to attempt to solve this equation for $\GS$ such that we achieve a desired noise figure $F$, we start by separating the $\GS$ components from the rest of the equation
+%
+\begin{equation}
+    \frac{|\GS-\GOpt|^2}{1 - |\GS|^2} = \frac{F - \FMin}{4r_n}|1 + \GOpt|^2
+\end{equation}
+%
+As the right side of this equation is constant, we can write
+%
+\begin{equation}
+    N = \frac{\Delta F}{4r_n}|1 + \GOpt|^2
+    \label{eq:noise_N}
+\end{equation}
+%
+where $\Delta F$ is the desired noise penalty (in noise figure) from $\FMin$.
+Interestingly, the solution to this in $\GS$ is a circle on the complex plane with center
+%
+\begin{equation}
+    C_F = \frac{\GOpt}{1 + N}
+\end{equation}
+%
+and radius
+\begin{equation}
+    R_F = \frac{\sqrt{N^2+N(1-|\GOpt|^2)}}{1 + N}
+\end{equation}
+%
+So, for a given set of noise parameters and desired noise (greater than or equal to the device's minimum noise), we can draw a circle on the Smith chart of equal noise.
+If we were to design a matching network to build an amplifier for this noise, we have an infinite number of impedances to choose from.
+
+As engineering is all about tradeoffs, we need to start introducing additional constraints apart from noise.
+If we did not, one would rightly ask, "Why not simply match to $\GOpt$?"
+Primarily, the answer to this arises from the unfortunate reality that $\GOpt$ is distinct from the actual conjugate input reflection coefficient of the device, $\GIn^*$.
+This implies that as you attempt to match a device for optimum noise, you do not optimally deliver power to it.
+In other words, the optimum noise impedance has a reflection or gain penalty.
+
+In system design, these various performance metrics describe the trade-space.
+One can pick high gain or low reflection, but have bad noise performance, or vice versa.
+As Friis tells us in the cascaded noise equation~\cite{pozarMicrowaveEngineering2012}
+%
+\begin{equation}
+    F_\text{Total} = F_1 + \frac{F_2 - 1}{G_{A_1}} + \frac{F_3 - 1}{G_{A_1}G_{A_2}} \dots + \frac{F_N-1}{\prod_{i=1}^{N-1}G_{A_i}}
+\end{equation}
+%
+where $G_{A_i}$ is the available gain of the ith amplifier, we must maximize the gain of the early stages to reduce the noise impact of noise contributors further down the signal chain.
+Again, part of the system design work is evaluating all these tradeoffs.
+
+Traditionally, the exploration into these tradeoffs is rather brute-force.
+However, a more disciplined approach can be taken.
+We can formulate exact solutions for optimum noise under constraints, allowing us to explore theoretical limits given a device's intrinsic behavior and informing engineering decisions made in design.
+
+\subsection{Optimum Noise Under Constraints}
+
+Suppose we want to design an LNA with a given reflection coefficient or equivalent VSWR.
+The amplifier we want will have minimum noise with VSWR being constant.
+Given that:
+%
+\begin{equation}
+\text{VSWR} = \frac{1+|\GA|}{1 - |\GA|}
+\end{equation}
+%
+and
+\begin{equation}
+    |\GA| = \left|\frac{\GIn - \GS^*}{1 - \GIn \GS}\right|
+    \label{eq:mga}
+\end{equation}
+%
+where
+%
+\begin{equation}
+    \GIn = S_{11} + \frac{S_{12}S_{21}\GL}{1-S_{22}\GL}
+    \label{eq:gamma_in}
+\end{equation}
+%
+we could write this problem as a mathematical minimization equation via
+%
+\begin{mini}
+	{\GS}{F(\GS)}
+	{}{}
+	\addConstraint{|\GA|}{\leq|\GA|_\text{Max}}
+    \label{eq:noise_mini}
+\end{mini}
+%
+As written, this is a constrained, nonlinear optimization problem.
+These kinds of problems are characteristically difficult to solve and are usually non-convex.
+In this case, however, there is an exact solution.
+
+In the previous section, we mentioned that constant noise induces circles in the $\GS$ plane.
+The same is true for constant VSWR.
+For a given $|\GA|$, we can draw the circle with center
+%
+\begin{equation}
+    C_V = \frac{\GIn^*(1-|\GA|^2)}{1 - |\GA\GIn|^2}
+\end{equation}
+and radius
+%
+\begin{equation}
+    R_V = \frac{\left||\GA||1-|\GIn|^2\right|}{\left|1-|\GA\GIn|^2\right|}
+\end{equation}
+%
+Points inside this circle have strictly lower reflection, so we know a solution to \autoref{eq:noise_mini} must lie on this circle or inside it.
+If we consider the case where $\GOpt$ is not inside the constant VSWR circle, we can fully constrain the optimum solution to lie on this circle.
+This is where we apply the noise circle formalism from before.
+As the radius of this circle scales with $\Delta F$, we want to find the noise circle that just touches the constant VSWR circle.
+We know this will have a solution, as we can keep increasing the radius until it touches the VSWR circle.
+We also know that this will have exactly one solution, as any further intersections would arise from a larger circle with higher noise.
+This is the geometric intuition for the convexity of \autoref{eq:noise_mini}.
+
+Expressing this condition mathematically, we can state
+%
+\begin{equation}
+    R + R_F = |C-C_F|
+\end{equation}
+%
+or the sum of the two circles' radii equal the Euclidean distance between the centers of the two circles, given an arbitrary circle with center $C$ and radius $R$ and the noise circle stated above.
+Solving this relation for $N$ (\autoref{eq:noise_N}) gives the quadratic result following~\cite{linkAnalyticalExpressionsSimplifying1995}
+%
+\begin{equation}
+    N = \frac{-B\pm\sqrt{B^2-4AC}}{2A}
+    \label{eq:min_n_touch}
+\end{equation}
+%
+where
+\begin{align*}
+    c_1 &= |C|^2 - R^2 - 1 \\
+    c_2 &= |\GOpt-C|^2 - R^2 \\
+    A &= c_1^2 - 4R^2 \\
+    B &= 2c_1c_2 + 4R(|\GOpt|^2 - 1) \\
+    C &= c_2^2
+\end{align*}
+%
+We can then take this result and plug it in to \autoref{eq:noise_N} to solve for $\Delta F$.
+To disambiguate between the two solutions, we apply the constraint that $N$ must be positive, and if both solutions are positive, we take the smaller of the two.
+From here, we can immediately compute a minimum theoretical noise under a VSWR constraint.
+
+\subsection{Worked Examples}
+To showcase these results, we will be investigating the \qty{400}{\nm} x \qty{200}{\um} gate, four-finger (4F50) transistor from Diramics~\cite{DiramicsPH2004F50} at a bias of $V_d$=\qty{0.5}{\V}, $I_d$=\qty{16}{\mA}, using the vendor-supplied model.
+To begin investigating this device, we can look at its S and noise parameters, with no further circuitry.
+This allows us to set the stage for input/output matching and feedback.
+
+\begin{figure}[ht!]%
+    \centering
+    \subfloat{\includestandalone[mode=buildnew]{figures/4f50_s_gopt}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/4f50_gain}}%
+    \caption{{4F50 $S_{11}$, $S_{22}$, $S_{21}$, and $\GOpt$ from \SIrange{0.1}{10}{\GHz}}}%
+    \label{fig:4f50_s_gopt}%
+\end{figure}
+
+We can start by analyzing this device at a single frequency point, \qty{1.5}{\GHz}.
+If we wanted the optimum $\GS$ for this device under the constraint that $|\GA| \leq 0.9$, we find $\Delta F$ of \qty{0.012} or an $F$ of \qty{1.038} or \qty{11.1}{\K} of noise temperature.
+Using this result, we can compute the center and radii of the two circles.
+Then, with both centers and either radius, we can compute their osculation point using simple geometry
+%
+\begin{equation}
+    \GS =  
+    \begin{cases}
+        C_F - R_F\frac{C-C_F}{|C-C_F|},& \text{if\enspace}|C-C_F|\leq R \text{\enspace and\enspace} R_F\leq R\\
+        C_F + R_F\frac{C-C_F}{|C-C_F|},              & \text{otherwise}
+    \end{cases}
+\end{equation}
+%
+
+Plotted on the Smith chart, we can see the result is as expected, with the intersection of the two circles giving the optimum $\Gamma_S$
+\begin{figure}[ht!]
+    \centering
+    \includestandalone[mode=buildnew]{figures/mga_opt}
+    \caption{$|\GA|$=0.9 optimum noise solution at \qty{1.5}{\GHz}}
+    \label{fig:mga_opt}
+\end{figure}
+
+We can now begin to explore some useful results.
+First, we could compute the achievable noise given a range of VSWR constraints to quickly analyze the tradeoff between the two.
+In \autoref{fig:nf_vs_mga}, we plot the achievable noise temperature in K under a reflection constraint sweeping $|\GA|$ from 0.1 to 0.95.
+A value for $|\GA|$ higher than 0.95 places $\GOpt$ inside the VSWR circle, implying that for any constraint higher than 0.95 we would pick $\GS$ = $\GOpt$ and our noise would be $\FMin$.
+%
+\begin{figure}[ht!]
+    \centering
+    \includestandalone[mode=buildnew]{figures/nf_vs_mga}
+    \caption{Optimum noise figure versus $|\GA|$ at \qty{1.5}{\GHz}}
+    \label{fig:nf_vs_mga}
+\end{figure}
+%
+This result alone tells us that we will have to make major sacrifices in reflection to achieve good noise performance.
+
+Another result from \autoref{eq:min_n_touch} is the fact that this solution is agnostic to the constraining circle.
+Instead of VSWR, we could use a different circle such as constant gain instead.
+Specifically, we would look at circles of constant available gain, as those are drawn in the $\GS$ plane as is noise.
+
+Recall that available gain is defined as
+%
+\begin{equation}
+    G_A = \frac{P_\text{AVN}}{P_\text{AVS}} = \frac{\text{Power available from the network}}{\text{Power available from the source}}
+\end{equation}
+%
+where
+%
+\begin{equation}
+    G_A = \frac{1-|\GS|^2}{|1-S_{11}\GS|^2}\frac{|S_{21}|^2}{1-|\GOut|^2}
+    \label{eq:available_gain}
+\end{equation}
+%
+and
+%
+\begin{equation}
+    \GOut = S_{22} + \frac{S_{12}S_{21}\GS}{1-S_{11}\GS}
+    \label{eq:gamma_out}
+\end{equation}
+%
+This function is only parameterized by $\GS$ and the device characteristics, operating under the assumption that the output is conjugate-matched.
+In the same manner as $\GA$ and noise, we can solve for the values of $\GS$ that result in the same available gain.
+If we define a normalized desired gain of
+%
+\begin{equation}
+    g_a = \frac{G_a}{|S_{21}|^2}
+\end{equation}
+%
+the center and radius of the circles for constant $g_a$ are
+%
+\begin{equation}
+    C_a = \frac{g_a\left(S_{11}^*-S_{22}\Delta^*\right)}{1 + g_a\left(\left| S_{11}\right|^2 - |\Delta|^2\right)}
+\end{equation}
+%
+and
+%
+\begin{equation}
+    R_a = \frac{\sqrt{
+    1-g_a\left(1-|S_{11}|^2-|S_{22}|^2 + |\Delta|^2\right) + g_a^2|S_{12}S_{21}|^2
+    }}
+    {1 + g_a\left(\left| S_{11}\right|^2 - |\Delta|^2\right)}
+\end{equation}
+%
+where
+%
+\begin{align*}
+    \Delta &=S_{11}S_{22} - S_{12}S_{21}
+\end{align*}
+
+Looking back at \autoref{fig:4f50_s_gopt}, at \qty{1.5}{\GHz}, we have a maximum stable gain (MSG) of about \qty{25}{\dB} and an $S_{21}$ (gain under \qty{50}{\ohm} conditions) or about \qty{20}{\dB} where
+%
+\begin{equation}
+    MSG = \frac{|S_{21}|}{|S_{12}|}
+    \label{eq:msg}
+\end{equation}
+%
+If we draw the circle of constant available gain of \qty{20}{\dB} (which intersects the center of the Smith chart, as it is the value of $S_{21}$) and the intersecting minimum noise circle, we get the result shown in \autoref{fig:gain_noise_opt}.
+Notably, $\GOpt$ is inside the constant gain circle, implying that $\GOpt$ results in a higher gain than the chosen value.
+While usually we would want more gain, we will proceed with the $G_A=$\qty{20}{dB} solution for illustration purposes.
+
+\begin{figure}[ht!]
+    \centering
+    \includestandalone[mode=buildnew]{figures/gain_noise_opt}
+    \caption{\qty{20}{\dB} optimum noise solution at 1.5 GHz}
+    \label{fig:gain_noise_opt}
+\end{figure}
+
+Looking at the relative positions of $S_{11}^*$ and the VSWR circles from \autoref{fig:mga_opt}, this $\GS$ solution will have suboptimal VSWR.
+To be more precise, we can plug this $\GS$ into \autoref{eq:mga} and find that the $|\GA|$ for this solution is \num{0.986} with a noise temperature of \qty{13.2}{\K}.
+From the other perspective, if we took the $\GS$ solution from \autoref{fig:mga_opt} with a $|\GA|$ = 0.9, we find the available gain using \autoref{eq:available_gain} has a high negative value, indicating this solution is unstable!
+If we use the unilateral approximation here where $S_{12}$ = 0, we will find that the available gain for the $\GS$ solution under the $|\GA|$ = 0.9 constraint is \qty{28}{\dB}, \qty{2}{\dB} over the maximum stable gain.
+In fact, if we compute $\GOut$ for this same $\GS$, we find a magnitude greater than unity, indicating oscillation.
+
+\subsection{Stability and Degeneration}
+
+Up to this point, we have failed to mention the impact of stability on the computed results.
+As we intend to design an amplifier and not an oscillator, it is imperative that the magnitudes of our reflection coefficients are less than unity.
+For a single gain element (transistor), one can use Rowlett's~\cite{rollettStabilityPowerGainInvariants1962} stability factor, K, to determine if the amplifier is stable.
+%
+\begin{equation}
+    K = \frac{1-|S_{11}|^2-|S_{22}|^2 + |\Delta|^2}{2|S_{12}S_{21}|}
+\end{equation}
+%
+When K is greater than unity and the magnitude of the determinant of the S matrix $|\Delta|$ is less than unity, the amplifier is unconditionally stable.
+This considers potential matching on both the source and load side of the device.
+
+While stability is critical, we can be a bit more lax than ``unconditional'' stability.
+To expand on this, stability of every impedance over the load plane is not strictly required, as we will know precisely what the $\GL$ value will be (assuming we are conjugate matching).
+On the input, we have a bit more to consider.
+As shown earlier, we have a range of impedances that represent various trade-offs.
+To make sure we are correctly comparing performance between options, those $\GS$ solutions must be stable.
+Additionally, we have been operating under the assumption that this LNA will be attached to a \qty{50}{\ohm} source, which is not quite true.
+If this were a product, one has no idea what source impedance the customer might try to attach the amplifier to.
+For us in astronomy, the impedance of the feed antenna will attempt to match to \qty{50}{\ohm}, but will degrade out of band.
+We need to ensure that over the range that the amplifier has gain (which is quite high for this high $f_t$ Diramics device), the presented source impedance does not cause the amplifier to oscillate.
+
+Instead of evaluating unconditional stability, we can focus on the magnitude of the S parameters and the geometric stability factors~\cite{edwardsNewCriterionLinear1992}.
+Specifically, we can look at $\mu^\prime$, which gives us the distance from the center of the Smith chart to the source-plane stability circle (the boundary of the impedance region that pushes the device into instability).
+If this quantity is greater than unity, no impedance in the source plane will cause the amplifier to oscillate.
+\begin{equation}
+    \mu^\prime = \frac{1-|S_{22}|^2}{|S_{11}-S_{22}^*\Delta| + |S_{21}S_{12}|}
+    \label{eq:mu_prime}
+\end{equation}
+
+There are many ways one could stabilize a potentially unstable amplifier.
+Unfortunately, most of these methods degrade the amplifier's noise.
+An alternative strategy is to use the common technique of inductive degeneration~\cite{lerouxDetailedStudyCommonSource2005}.
+For the common-source amplifier we are investigating, this degeneration is realized as an inductor on the source terminal.
+In implementation, this could be a transmission line, a bond wire, or a lumped component.
+
+We can directly compute the modified S parameters of the transistor under degeneration.
+The series-series feedback of the inductor attached to the source terminal is equivalent to the sum of the networks' Z parameters, shown in \autoref{fig:series_series}.
+%
+\begin{figure}[ht!]
+    \centering
+    \includestandalone[mode=buildnew]{figures/series_series}
+    \caption{Series-Series feedback in Z parameters}
+    \label{fig:series_series}
+\end{figure}
+
+Converting our S parameters to Z parameters with
+%
+\begin{equation}
+    \mathbf{Z} = \frac{Z_0}{\Delta_s}
+    \begin{bmatrix}
+    (1+S_{11})(1-S_{22})+S_{12}S_{21} & 2S_{12} \\
+    2S_{21} & (1-S_{11})(1+S_{22})+S_{12}S_{21}
+    \end{bmatrix}
+    \label{eq:s2z}
+\end{equation}
+%
+where
+%
+\begin{equation*}
+    \Delta_s = (1-S_{11})(1-S_{22})-S_{12}S_{21}
+\end{equation*}
+and
+%
+\begin{equation}
+    \mathbf{S} = \frac{1}{\Delta_z}
+    \begin{bmatrix}
+    (Z_{11}-Z_0)(Z_{22}+Z_0)+Z_{12}Z_{21} & 2Z_0Z_{12} \\
+    2Z_0Z_{21} & (Z_{11}+Z_0)(Z_{22}-Z_0)-Z_{12}Z_{21}
+    \end{bmatrix}
+    \label{eq:z2s}
+\end{equation}
+%
+where
+%
+\begin{equation*}
+    \Delta_z = (Z_{11}+Z_0)(Z_{22}+Z_0)-Z_{12}Z_{21}
+\end{equation*}
+%
+we can take our device's S parameters, convert to Z parameters, add the Z parameters of the impedance of the feedback ($ZJ_2$ where $J_2$ is the 2x2 unit-matrix), and convert back to S parameters to evaluate the new S parameters and derived stability.
+The S parameters of this construction are
+%
+\begin{equation}
+    \mathbf{S}_\text{Degen} = \frac{1}{Z(S_{11}+S_{12}+S_{21}+S_{22}) - 2Z_0}\left(\begin{bmatrix}
+        \Delta_A & \Delta_B \\
+        \Delta_B & \Delta_A
+    \end{bmatrix}
+    +
+    2Z_0\mathbf{S}
+    \right)
+    \label{eq:s_degen}
+\end{equation}
+%
+where
+%
+\begin{align*}
+    \Delta_A &= \Delta + S_{12}+S_{21} - 1 \\
+    \Delta_B &= -\Delta + S_{11}+S_{22} - 1
+\end{align*}
+
+We could attempt to plug in \autoref{eq:s_degen} to \autoref{eq:mu_prime} and solve for the L that forces $\mu^\prime$ to unity, but we are unfortunately not guaranteed a solution.
+A better approach is to plot $\mu^\prime$ across a range of inductances to explore the trade space.
+However, the maximum gain of the modified amplifier also changes with degeneration, as expected for an amplifier under feedback.
+These two metrics are plotted versus the degeneration inductance in \autoref{fig:L_msg_degen}.
+%
+\begin{figure}[ht!]%
+    \centering
+    \subfloat{\includestandalone[mode=buildnew]{figures/L_degen}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/msg_degen}}%
+    \caption{$\mu^\prime$ and MSG versus inductive degeneration for the 4F50 at \qty{1.5}{\GHz}}%
+    \label{fig:L_msg_degen}%
+\end{figure}
+
+From these results, we can determine that to achieve an MSG of \qty{20}{\dB}, we can tolerate at most \qty{1.5}{\nH} of degeneration.
+The $\mu^\prime$ metric tells us the distance of the source stability circle from the center of the Smith chart, so we can compare this value with the magnitude of the desired $\GS$ to evaluate conditional stability.
+\qty{1.5}{\nH} is a reasonable value, as we will be wire bonding the source pad of the die transistor, and the rule of thumb is about \qty{1}{\nH} of inductance per \qty{1}{\mm} of bond wire length.
+
+Next, we must evaluate the effect of the degeneration on the noise parameters.
+Starting from the Hartmann and Strutt result~\cite{hartmannChangesFourNoise1973} which describes the changes in noise parameters under feedback, we can compute the ``noise parameter transformation matrix'' as
+%
+\begin{equation}
+    n = \frac{1}{\Delta_n}\begin{bmatrix}
+        \Delta_n &  Z_0Z(\Delta + S_{22}-S_{11}+2S_{21}-1) \\
+        0 & 2S_{21}Z_0
+    \end{bmatrix}
+\end{equation}
+%
+where
+%
+\begin{equation*}
+    \Delta_n = Z(S_{11}-1)(S_{22}-1) + S_{21}(2Z_0-S_{12}Z)
+\end{equation*}
+%
+under the assumption of series feedback, as is the case for the degeneration inductance as shown earlier.
+From here, we use the relations
+%
+\begin{align}
+    R_n^\prime &= R_n|n_{11} + n_{12}Y_\text{Corr}|^2 + G_n|n_{12}|^2 \\
+    G_n^\prime &= \frac{G_nR_n|n_{11}n_{22} - n_{12}n_{21}|^2}{R_n^\prime} \\
+    Y_\text{Corr}^\prime &= \frac{R_n(n_{21} + n_{22}Y_\text{Corr})(n_{11}^*+n_{12}^*Y_\text{Corr}^*) + G_nn_{22}n_{12}^*}{R_n^\prime}
+\end{align}
+%
+where $R_n$ is the same noise resistance, $G_n$ is the noise conductance, and $Y_\text{Corr}=G_\text{Corr}+jB_\text{Corr}$ is the correlation admittance, with the noise figure equation here being expressed as
+%
+\begin{equation}
+    F = 1 + \frac{G_n}{G_s} + \frac{R_n}{G_s}|Y_S - Y_\text{Corr}|^2
+\end{equation}
+%
+with $Y_S=G_S+jB_S$ being the source admittance.
+This is a separate form of the noise equation from \autoref{eq:noise_f}, and we can convert between the two using results from \cite{heymannNoiseLinearTwoPorts2022} with
+%
+\begin{align}
+    Y_\text{Opt} &= \sqrt{\frac{G_N}{R_N}+G_\text{Corr}^2} - jB_\text{Corr} \\
+    \FMin &= 1 + 2R_N(G_\text{Corr} + G_\text{Opt})
+\end{align}
+%
+and
+%
+\begin{align}
+    Y_\text{Corr} &= \frac{\FMin - 1}{2R_N} - G_\text{Opt} - jB_\text{Opt} \\
+    G_N &= R_N(G_\text{Opt}^2 - G_\text{Corr}^2)
+\end{align}
+%
+With this result, we can recompute the noise behavior of the degenerated device.
+With this small inductance, the resulting noise parameters do not change much.
+\cite{hartmannChangesFourNoise1973} gives an approximation that under the conditions
+\begin{equation}
+    L_\text{Degen} \ll \frac{1}{\omega}\left| \frac{2S_{21}Z_0}{(1-S_{11})(1-S_{22})-S_{12}S_{21}} \right|
+\end{equation}
+and
+\begin{equation}
+    \Re\{n_{12}\} \ll \frac{R_n\Re\{Y_\text{Corr}\}}{R_n|Y_\text{Corr}|^2+G_n}
+\end{equation}
+the noise parameters are practically unchanged.
+We will, however, not make this assumption.
+The degenerated S parameters and $\GOpt$ are shown in \autoref{fig:4f50_s_gopt_mga_degen} along with the optimum noise $\GS$ under a \qty{20}{\dB} gain constraint, similar to \autoref{fig:gain_noise_opt}.
+%
+\begin{figure}[ht!]%
+    \centering
+    \subfloat{\includestandalone[mode=buildnew]{figures/4f50_s_and_gopt_degen}}%
+    \subfloat{\includestandalone[mode=buildnew]{figures/mga_opt_degen}}%
+    \caption{$S_{11}$, $S_{22}$, and $\GOpt$ from \SIrange{0.1}{10}{\GHz} and noise optimum $\GS$ at \qty{1.5}{\GHz} under \qty{1.5}{\nH} source degeneration}%
+    \label{fig:4f50_s_gopt_mga_degen}%
+\end{figure}
+
+While this result looks similar to \autoref{fig:mga_opt}, this $\GS$ solution achieves a noise temperature of \qty{9.56}{\K} with a $|\GA|$ of only \num{0.195}, or an $|S_{11}|^2$ of \qty{-14.2}{\dB}, which is quite impressive for an LNA.
+
+If this were a single-frequency design, we could design a simple matching network to conjugate-match the output and provide the $\GS$ solved here at the input.
+Much to the chagrin of the RF engineer, customers and scientists demand bandwidth.
+Next, we will explore how these design techniques apply to wideband design.
+
+\section{Wideband Design Under Constraints}
+
+Using the techniques established thus far, we can begin to evaluate the wideband behavior of the transistor under investigation.
+To do so, we can solve either the VSWR or gain constrained problem, and plot the resulting noise, gain, and $S_{11}$ versus frequency.
+For this section, we will focus on the same device and bias point, over the \SIrange{0.7}{2}{\GHz} range, matching the target band for the DSA-2000.
+
+We will begin by choosing a desired gain constraint, $G_A$\qty{=20}{\dB}.
+We then evaluate MSG over frequency and degeneration inductance to find what maximum degeneration value allows for an MSG greater than our desired $G_A$ across the band.
+We are maximizing degeneration to result in a maximally stable amplifier.
+The plot of MSG versus frequency and degeneration is shown in \autoref{fig:msg_freq_l}.
+From this result, we can see that to achieve \qty{20}{\dB} of gain over our entire frequency range, we need an inductance of \qty{0.8}{\nH}, less than our \qty{1.5}{\nH} result from before.
+%
+\begin{figure}[ht!]
+    \centering
+     \includestandalone[mode=buildnew]{figures/msg_freq_l}
+    \caption{MSG vs Degeneration vs Freq}
+    \label{fig:msg_freq_l}
+\end{figure}
+
+With this degeneration value, we can solve for the optimum noise $\GS$ under a $G_A$\qty{=20}{\dB} constraint, and compute the remaining parameters such as the input and output return loss and noise.
+%
+\begin{figure}[ht!]
+    \centering
+     \includestandalone[mode=buildnew]{figures/_08nh_20db}
+    \caption{Performance under \qty{0.8}{\nH} degeneration with a \qty{20}{\dB} gain constraint}
+    \label{fig:_08nh_20db}
+\end{figure}
+
+In \autoref{fig:_08nh_20db}, we can see that from \SIrange{0.7}{1.75}{\GHz}, we can achieve higher gain than the requested value, with $\GS$ taking on $\GOpt$.
+After this point, however, we sacrifice noise to maintain our gain requirement.
+Additionally, looking at the input return loss (IRL) and output return loss (ORL), we see they are reasonable values, notably positive (in loss) indicating this implementation is stable, as we expect from the MSG curve.
+However, at \qty{2}{\GHz} we are right at the limit of stable gain under the gain matching condition.
+This may imply that small perturbations in the design will cause it to oscillate.
+To build a more robust amplifier, we will want additional margin.
+Furthermore, the noise gets significantly worse past \qty{1.75}{\GHz}.
+\newpage
+
+\begin{figure}[ht!]
+    \centering
+     \includestandalone[mode=buildnew]{figures/_08nh_18db}
+    \caption{Performance under \qty{0.8}{\nH} degeneration with a \qty{18}{\dB} gain constraint}
+    \label{fig:_08nh_18db}
+\end{figure}
+
+With the same degeneration value, we can look at a slightly loosened gain constraint of \qty{18}{\dB}.
+Shown in \autoref{fig:_08nh_18db}, we see that we are meeting our gain requirement across the whole frequency range, implying the optimum $\GS$ is simply $\GOpt$.
+
+For radio astronomy, we aren't particularly interested in the various return losses, rather gain and noise.
+Noise, of course, gives the telescope sensitivity, while gain reduces the impact of the noise generators after the LNA.
+We could look at the noise performance under return loss constraints, but we would see similar results as this exercise with gain.
+As such, we can move our attention to the implementation of the network that performs the match to $\GOpt$.
+
+\section{Wideband Nonuniform Line Matching}
+
+From the result in \autoref{fig:_08nh_18db}, we know now we want to create a matching network directly for $\GOpt$, under \qty{0.8}{\nH} of inductive source degeneration.
+Unfortunately, there is not an analytic way to design a matching network for an arbitrary impedance response with frequency.
+There are many optimization approaches in the literature, perhaps the most popular being the ``Real Frequency Technique''~\cite{yarmanSimplifiedRealFrequency1982,carlinOptimumBroadbandMatching1981}.
+In this approach, coefficients for a Laplace-domain polynomial are optimized, minimizing an error function between desired behavior and modelled in the least-squares sense.
+Solving for these polynomials involves iterative root-finding, on top of the normal iterative gradient-descent optimization.
+After we have found the optimum $N$th order polynomial, we still need to perform a synthesis step where we transform the result into lumped or distributed components.
+Unfortunately, there is no guarantee during optimization that the resulting implementation is physical.
+Additionally, the multistep iteration and finite-difference approximation of the gradient is slow and imprecise.
+
+If we happened to know the topology of the matching network a priori, we could attempt to directly optimize it using the same least-squares approach.
+For the case of this amplifier we are attempting to design, there are very few matching topologies which would be acceptable.
+This primarily comes from the fact that $\FMin$ is so low, so any discrete components will be much too lossy and significantly impact our noise.
+So, we are left with transmission line matching, either as cascaded stubs, cascaded steps, or some combination of the two.
+One of the more interesting topologies to investigate is the nonuniform transmission line (NTL).
+These lines vary their impedance continuously as a function of position.
+NTLs have been widely studied in matching contexts, even for complex loads~\cite{xiaoImpedanceMatchingComplex2002}.
+
+Here, we can attempt to use NTLs to match to $\GOpt$ over our wide bandwidth, formulated as a least-squares problem against $\GS$.
+The difficulty, however, is parameterizing the NTL in a simple way that allows us to compute $\GS$.
+A common approach is to discretize the line into many uniform sections and cascade their scattering behavior.
+With many sections, this yields a good approximation to the smooth transmission line.
+
+In optimization, we will use a gradient-descent approach, which will require the derivative of our cost function with respect to every input variable.
+If we parameterize the NTL by $N$ lines of characteristic impedance $Z_i$, each with constant length of $\delta L$ across $M$ distinct frequencies $\nu$ and source reflection coefficient (before this input matching network) of $\GS$, we can write a cost function as
+%
+\begin{equation}
+    E = \frac{1}{M}\sum_{i=1}^M \left| \Gamma_\text{Out}\left(\prod_{j=1}^N A(Z_j,\delta L, \nu_i),\Gamma_S\right) - \Gamma_{\text{Opt}_i} \right|^2
+    \label{eq:tline_cost}
+\end{equation}
+%
+where the final ABCD parameters can be converted to S parameters using the standard transformations~\cite{pozarMicrowaveEngineering2012}.
+As all the expressions thus far are analytic, the gradient for $\delta E/\delta Z_j$ has an analytic form.
+As $N$ increases, however, this expression will have exponentially more terms.
+One could use the finite-difference method to compute this derivative, but this is inefficient and imprecise.
+Instead, we will make use of automatic differentiation to compute the exact gradients.
+There are significant performance implications here, which will be discussed in \autoref{ch:lna}.
+
+One interesting note about the cost function in \autoref{eq:tline_cost} is that we will minimize geometric error to $\GOpt$, not noise.
+The distance between $\GS$ and $\GOpt$ is proportional to noise, but the true relationship follows from \autoref{eq:noise_f}, which contains the same geometric error term of $|\GS - \GOpt|^2$, but is divided by $1-|\GS|^2$.
+We could use the full noise equation in optimization, however this more simple geometric approximation yielded a satisfactory result.
+
+Given a set of $\GOpt$ with frequency and a total length $L$, we can compute the optimum $Z_j$ versus linear distance profile.
+In the current formulation, the total length of the line $L$ is not part of the optimization, so we must pick a few lengths to see the response surface.
+From\cite{xiaoImpedanceMatchingComplex2002}, longer lines should yield better results, although we will be at odds with insertion loss in actual implementation.
+We can start our investigation with length using slightly less than $\lambda/4$ at \qty{700}{\MHz}, as NTLs have been used for miniaturization of quarter wave lines before\cite{khalaj-amirhosseiniNonuniformTransmissionLines2008}.
+In free space, we will start at \qty{80}{\mm} and test various lengths.
+We will also constrain the characteristic impedances between \qty{45}{\ohm} and \qty{350}{\ohm} as that is the range of what is practically realizable in suspended microstrip.
+The resulting profile and performance is shown in \autoref{fig:l80_lambda0}.
+%
+\begin{figure}[ht!]%
+    \centering
+    \subfloat{\includestandalone[mode=buildnew]{figures/l80_lambda0_profile}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/l80_lambda0_t_g}}%
+    \caption{Optimal impedance profile, noise, and gain for an \qty{80}{\mm} NTL}%
+    \label{fig:l80_lambda0}%
+\end{figure}
+
+In \autoref{fig:l80_lambda0}, a few things are immediately apparent.
+One, the line is notably not smooth at all, rather oscillating between the high and low impedance limits.
+The noise match, however, is quite reasonable, with a band-average of \qty{7.99}{\K} compared to the band-average of $T_\text{Min}$ of \qty{7.64}{\K}.
+Unfortunately, the sharp discontinuities break our working assumption of smoothness in the nonuniform lines.
+These discontinuities can create EM effects not captured by the cascaded uniform section model.
+For example, in microstrip, large step discontinuities such as these can drastically alter circuit behavior and must be accounted for~\cite{edwardsDiscontinuitiesMicrostrip2016}.
+This behavior of optimizing discrete shapes in NTLs has been seen before~\cite{miazgaDiscreteShapeOptimization2008} and in the limit approximates an R-transformer~\cite{rosloniecDesignSteppedTransmission1994}.
+We have a few options to account for this.
+One, we could add in a circuit model of the discontinuity, although this would rely on knowing the transmission line implementation.
+Second, we could add a constraint to the optimization to account for smoothness.
+We will choose the latter here, as we want to make minimal assumptions about the transmission line topology.
+
+In~\cite{miazgaNonuniformTransmissionLine2014}, one option to contend with the stepped behavior of NTL optimization is to add a constraint where every impedance step is no more than some preset limit.
+For a \num{100}-section line, this adds a \num{99}-element constraint vector, with an associated highly sparse constraint Jacobian.
+This adds a lot of complexity to the optimization problem and makes the performance significantly worse.
+We propose an alternative of simply regularizing for total smoothness by adding a Lagrange multiplier to the sum of impedance deltas.
+With this, the new cost function looks like
+%
+\begin{equation}
+    E = \frac{1}{M}\sum_{i=1}^M \left| \Gamma_\text{Out}\left(\prod_{j=1}^N A(Z_j,\delta L, \nu_i),\Gamma_S\right) - \Gamma_{\text{Opt}_i} \right|^2 + \frac{\lambda}{M} \sum_{i=2}^{M}\left|Z_i-Z_{i-1}\right|^2
+    \label{eq:tline_cost_reg}
+\end{equation}
+%
+where $\lambda$ adjusts the strength of the regularization term.
+
+For the same $M$=100, L=\qty{80}{\mm} problem, but now with regularization for $\lambda$=\num{0.005}, we get the result shown in \autoref{fig:l80_lambda005}.
+While this result is certainly smooth, the gain and noise profiles are worse.
+The average noise temperature is now \qty{8.53}{\K}, about half a Kelvin worse than the previous result and \qty{1}{\K} worse than the minimum noise.
+Lowering $\lambda$ improves this, but of course, with sharper features in the impedance profile.
+
+The performance of the smooth line allows us to conclude that we may be better served with a longer line.
+This agrees with~\cite{xiaoImpedanceMatchingComplex2002}, in that the longer line is similar to more cascaded transformers.
+Using the same $\lambda$=0.005 regularization, we can re-run the optimization for a few different lengths shown in \autoref{fig:l80_lambda005}, \autoref{fig:l100_lambda005}, and \autoref{fig:l120_lambda005}.
+The noise is decreasing with increased length, with the \qty{120}{\mm} design achieving \qty{7.90}{\K}, a bit better than the \qty{80}{\mm} unregularized solution.
+
+All these smooth solutions are realizable in suspended stripline/microstrip, but we have failed to account for the insertion loss of the matching network itself.
+As the line grows in length, so does its loss and therefore noise.
+As the resulting design achieves a noise of \qty{10}{\K}, even \qty{0.15}{\dB} of insertion loss will double the noise.
+Additionally, the loss of the line is roughly proportional to its impedance, so the more high impedance section line we have, the worse the noise due to the smaller cross-sectional area and associated resistance per unit length.
+The precise details of optimizing the line considering its loss is the subject of \autoref{ch:lna}.
+
+\section{Summary}
+
+Using closed form expressions, we can quickly analyze the trade space of an amplifier design for a given transistor and its noise parameters.
+Using formulas for gain or VSWR constrains, we can find theoretical limits on noise, available gain, and stability.
+We apply these relations to every point in frequency to expand our understanding of the circuit in a wideband sense.
+Finally, with an appreciation of these limits, we can move to optimization to realize the desired $\GS$ versus frequency.
+The presented solution was a nonuniform line implementation of the noise matching network, but one could use a myriad of other matching techniques depending on the optimal $\GS$ curve desired.
+
+\newpage
+\begin{figure}[ht!]%
+    \centering
+    \subfloat{\includestandalone[mode=buildnew]{figures/l80_lambda005_profile}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/l80_lambda005_t_g}}%
+    \caption{Impedance profile, noise, and gain for an \qty{80}{\mm} NTL, $\lambda$=0.005}%
+    \label{fig:l80_lambda005}%
+
+    \subfloat{\includestandalone[mode=buildnew]{figures/l100_lambda005_profile}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/l100_lambda005_t_g}}%
+    \caption{Impedance profile, noise, and gain for an \qty{100}{\mm} NTL, $\lambda$=0.005}%
+    \label{fig:l100_lambda005}%
+
+    \subfloat{\includestandalone[mode=buildnew]{figures/l120_lambda005_profile}}%
+    \quad%
+    \subfloat{\includestandalone[mode=buildnew]{figures/l120_lambda005_t_g}}%
+    \caption{Impedance profile, noise, and gain for an \qty{120}{\mm} NTL, $\lambda$=0.005}%
+    \label{fig:l120_lambda005}%
+\end{figure}
+\newpage

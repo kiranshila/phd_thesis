@@ -1,0 +1,45 @@
+\documentclass[preview=true]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[siunitx, american]{circuitikz}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[T1]{fontenc}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{units, fillbetween, smithchart, colormaps}
+\usetikzlibrary{positioning, shapes, arrows, arrows.meta, graphs, shapes.geometric, math}
+\tikzset{>=latex} % Better arrow tips
+
+\begin{document}
+\begin{tikzpicture}[
+    declare function={
+        Lambd(\F) = \CZ/\F;
+        SS(\TSYS,\D,\ETAA,\B,\N,\F) = 1.217 * \ETAA * \B * (Lambd(\F)*\SNU*\N*\D/\TSYS)^2;
+    },
+]
+
+\newcommand\KB{1.380649e-23}
+\newcommand\CZ{299792458}
+\newcommand\SNU{2e-6}
+
+    \begin{axis}[width={10cm}, 
+            grid={both}, 
+            grid style={line width={.1pt}, 
+            draw={gray!10}}, 
+            major grid style={line width={.2pt}, draw={gray!50}},
+            ymode=log,
+            xmode = log,
+            ylabel = {Survey Speed (deg$^2$/hr to 2 $\mu$Jy)},
+            xlabel = {Frequency (Hz)}
+            ]
+     \addplot[domain=700e6:2000e6, samples=100,very thick] {SS(25,5,0.7,1.3e9,2000, x)} [every node/.style={yshift=6pt},sloped,blue] node [pos=0.5,font=\footnotesize] {DSA-2000};
+     \addplot[domain=900e6:1670e6, samples=100,very thick] {SS(20,13.965,0.8,0.77e9,64, x)} [every node/.style={yshift=6pt},sloped] node [pos=0.5,font=\footnotesize] {MeerKAT L};
+     \addplot[domain=580e6:1015e6, samples=100,very thick] {SS(23.5,13.965,0.75,0.77e9,64, x)} [every node/.style={yshift=-6pt},sloped] node [pos=0.5,font=\footnotesize] {MeerKAT UHF};
+     \addplot[domain=300e6:1500e6, samples=100,very thick] {SS(30,6,0.7,1.2e9,512, x)} [every node/.style={yshift=6pt},sloped] node [pos=0.5,font=\footnotesize] {CHORD};
+     \addplot[domain=700e6:1800e6, samples=100,very thick] {SS(70,12,0.7,1.1e9,36, x)} [every node/.style={yshift=-6pt},sloped] node [pos=0.5,font=\footnotesize] {ASKAP};
+     \addplot[domain=1280e6:1530e6, samples=100,very thick] {SS(25,4.65,0.7,250e6,96, x)} [every node/.style={yshift=6pt},sloped] node [pos=0.5,font=\footnotesize] {DSA-110};
+     \addplot[domain=1.2e9:3.5e9, samples=100,very thick] {SS(17.07,18,0.828,2.3e9,244,x)} [every node/.style={yshift=-6pt},sloped] node [pos=0.5,font=\footnotesize] {ngVLA Band 1};
+     \addplot[domain=3.4e9:12.3e9, samples=100,very thick] {SS(22,18,0.936,8.9e9,244,x)} [every node/.style={yshift=6pt},sloped] node [pos=0.5,font=\footnotesize] {ngVLA Band 2};
+    \end{axis}
+\end{tikzpicture}
+\end{document}

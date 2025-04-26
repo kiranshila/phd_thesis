@@ -1,0 +1,70 @@
+\documentclass[preview=true]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[siunitx, american]{circuitikz}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[T1]{fontenc}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{units, fillbetween, smithchart, colormaps}
+\usetikzlibrary{positioning, shapes, arrows, arrows.meta, graphs, shapes.geometric, math}
+\tikzset{>=latex} % Better arrow tips
+
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=13cm, height=6cm, grid={both}, grid style={line width={.1pt}, draw={gray!10}}, major grid style={line width={.2pt}, draw={gray!50}}, legend pos={south east}, xlabel={Laser Current (mA)}, ylabel={SFDR$_{2}$ (dB)},xmin=10,xmax=50]
+    \addplot[no marks, very thick, color={black}]
+        coordinates {
+            (10,38.998691140974266)
+            (12,48.68549209926563)
+            (14,54.00689278024317)
+            (16,57.50318853875291)
+            (18,59.937699873747114)
+            (20,61.93656124022409)
+            (22,63.61015751957166)
+            (24,64.72501369300934)
+            (26,65.88819469355937)
+            (28,66.8160807709836)
+            (30,67.7474699216761)
+            (32,68.24458915479565)
+            (34,68.64536873236895)
+            (36,68.85583205506417)
+            (38,69.40670001510557)
+            (40,68.73322318798321)
+            (42,68.12039285840785)
+            (44,66.93377782559666)
+            (46,65.11098042460364)
+            (48,63.48701299123544)
+            (50,61.19681076803955)
+        }
+        ;
+    \addlegendentry {700 MHz}
+    \addplot[no marks, very thick, color={blue}]
+        coordinates {
+            (10,35.47739558341909)
+            (12,43.797249176297676)
+            (14,49.41379493636785)
+            (16,53.088273186903564)
+            (18,55.69905089741338)
+            (20,57.79129023103836)
+            (22,59.37578680777233)
+            (24,60.772129874706344)
+            (26,61.8325890260517)
+            (28,62.8247804772886)
+            (30,63.88697205585872)
+            (32,64.47226271201227)
+            (34,64.64537789067322)
+            (36,65.46499176246871)
+            (38,65.40162090317334)
+            (40,65.40922944783242)
+            (42,65.21494781950588)
+            (44,64.61970694877144)
+            (46,63.42480728970963)
+            (48,62.12485020787665)
+            (50,60.673107280732665)
+        }
+        ;
+    \addlegendentry {1 GHz}
+\end{axis}
+\end{tikzpicture}
+\end{document}

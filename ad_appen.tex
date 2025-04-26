@@ -1,0 +1,175 @@
+At its core, AD is the recursive application of the chain rule:
+%
+\begin{equation}
+	\frac{d}{dx}\left[f\left(g\left(x\right)\right)\right] = f^{\prime}\left(g\left(x\right)\right)g^{\prime}\left(x\right)
+	\label{eq:chain_rule}
+\end{equation}
+%
+To apply the chain rule to computer programs, we must reinterpret the sequence of instructions that a program performs as function composition.
+For a complicated program with many steps, this is equivalent to nested composition $f(g(h(w(...(x)))))$.
+For deep nesting, it may be more useful to imagine the flow of values through the program as a computational graph.
+For the case of $f(g(x))$, there are three ``primal'' values: $x$, $g(x)$, and $f(g(x))$.
+Correspondingly, there are two ``tangent'' values, $g^{\prime}(x)$ and $f^{\prime}(g(x))$.
+This graph is shown in \autoref{fig:simple_ast} with square nodes indicating start and stop values, circular nodes indicating computation, and edges showing the flow of values.
+
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}[scale=1]
+		\node (x) [value] at (0,0) {$x$};
+		\node (g) [computation] at (0,-1.5) {$g$};
+		\node (f) [computation] at (0,-3) {$f$};
+		\node (v) [value] at (0,-4.5) {$f(g(x))$};
+		\draw [->] (x) to node[left] {$t_{1}=1$} node[right] {$p_{1}=x$} (g);
+		\draw [->] (g) to node[left] {$t_{2}=g^{\prime}(p_{1})t_{1}$} node[right] {$p_{2}=g(p_{1})$} (f);
+		\draw [->] (f) to node[left] {$t_{3}=f^{\prime}(p_{2})t_{2}=f^{\prime}(g(x))g^{\prime}(x)$} node[right] {$p_{3}=f(p_{2})=f(g(x))$} (v);
+	\end{tikzpicture}
+	\caption{Computational graph of forward-mode evaluation of $f(g(x))$ }
+	\label{fig:simple_ast}
+\end{figure}
+
+The values flowing down the right side of the graph in \autoref{fig:simple_ast} represent the normal evaluation of the program.
+The values on the left represent the accumulated tangents, with the initial value ``seeded'' as unity.
+Each primal computation relies on the values that immediately precede it.
+Similarly, the tangent components rely on the previous tangent and primal component.
+At the end of this graph, we have computed both the primal result and the tangent.
+This accumulation of tangent values alongside the primal values to build the resulting derivative is known as forward-mode AD.
+
+To extend forward-mode AD to multivariate functions, we set the tangent ``seed'' value of the independent variable of interest to unity, with the remaining variables' tangents set to zero.
+Consider this more complicated computer program:
+% 
+\begin{algorithm}[H]
+\caption{Example differentiable program}
+\begin{algorithmic}
+\STATE 
+\STATE {$f$}$(a, b)$:
+\STATE \hspace{0.5cm}$x \gets a^2 $
+\STATE \hspace{0.5cm}$y \gets \sin{b}$
+\STATE \hspace{0.5cm}\textbf{return}  $x*y$
+\end{algorithmic}
+\end{algorithm}
+%
+Suppose we want to find $\partial f/\partial b$.
+The graph of all operations, primals, and tangents to do so is shown in \autoref{fig:ast}.
+
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}[scale=1]
+		\node (a) [value] at (0,0) {$a$};
+		\node (b) [value] at (2,0) {$b$};
+		\node (pow) [computation] at (0,-2) {$x^{2}$};
+		\node (sin) [computation] at (2,-2) {$\sin$};
+		\draw [->] (a) to node[align=left,left] {$t_{1}=0$\\$p_{1}=a$} (pow);
+		\draw [->] (b) to node[align=left,right] {$t_{2}=1$\\$p_{2}=b$}(sin);
+		\node (times) [computation] at (1,-4) {$*$};
+		\draw [->] (pow) to node[align=left,left,xshift=-5pt] {$t_{3}=2p_{1}t_{1}$ \\ $p_3=p_1^2$} (times);
+		\draw [->] (sin) to node[align=left,right,xshift=5pt] {$t_{4}=\cos(p_{2})t_{2}$ \\ $p_{4}=\sin(p_{2})$}(times);
+		\node (f) [value] at (1,-6) {$f(a,b)$};
+		\draw [->] (times) to node[align=right, left] { $t_{5}=p_{3}t_{4} + t_{3}p_{4}$  $=a^2\cos(b)$}
+		node[align=right, right] {$p_{5}=p_{3}*p_{4}$  $=a^2\sin(b)$}(f);
+	\end{tikzpicture}
+	\caption{Computational graph of forward-mode evaluation of $f(a,b)$, with the tangent seeded on $b$}
+	\label{fig:ast}
+\end{figure}
+
+To compute $\partial f/\partial a$, we would set $t_{1}$ to unity and $t_{2}$ to zero and perform an additional sweep.
+This generalizes to an approach for evaluating gradients for functions of the form $f: \R^{n} \rightarrow \R^{m}$.
+Requiring one pass per independent variable implies that gradient evaluation in forward-mode has a complexity of $\mathcal{O}(n)$ for an $n$-dimensional input.
+As such, forward-mode performs well for $f: \R \rightarrow \R^{n}$ but has no better complexity than finite-differencing for $f: \R^{n} \rightarrow \R$ (while maintaining machine-precision accuracy).
+
+While forward-mode is simple and is straightforward to implement, the linear complexity poses a problem for high-dimensional functions such as large machine learning models or highly parameterized circuit optimizations.
+A solution is to change the manner in which we decompose the chain rule.
+Instead of computing the full derivative of each nested function recursively, we compute the derivate \textit{with respect to} each nested function recursively and work backwards.
+In practice, this amounts to evaluating the primal trace of the function as before, but now collecting all primal values and their partial derivatives with respect to each parent value.
+Then, we seed the ``adjoint'' of the dependent variable (output) with unity and work backwards through the graph, applying the chain rule utilizing the precomputed partials.
+This is known as reverse-mode AD.
+
+Looking again at our unary $f: \R \rightarrow \R$ function of $y = f(g(x))$, we draw the computational graph shown in \autoref{fig:reverse_simple_ast}.
+
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}[scale=1]
+		\node (x) [value] at (0,0) {$x$};
+		\node (g) [computation] at (0,-1.5) {$g$};
+		\node (f) [computation] at (0,-3) {$f$};
+		\node (y) [value] at (0,-4.5) {$y$};
+		\draw [->, bend right] (x) to node[left] {$p_{1}=x$} (g);
+		\draw [->, bend right] (g) to node[right] {$a_{1}=a_{2}\frac{\partial p_{2}}{\partial p_{1}}=a_{2}g^{\prime}(p_{1})=f^{\prime}(g(x))g^{\prime}(x)$} (x);
+		\draw [->, bend right] (g) to node[left] {$p_{2}=g\left(p_{1}\right)$} (f);
+		\draw [->, bend right] (f) to node[right] {$a_{2}=a_{3}\frac{\partial p_{3}}{\partial p_{2}}=a_{3}f^{\prime}(p_{2})$} (g);
+		\draw [->, bend right] (f) to node[left] {$p_{3}=f\left(p_{2}\right)$} (y);
+		\draw [->, bend right] (y) to node[right] {$a_{3}=1$} (f);
+	\end{tikzpicture}
+	\caption{Graph of reverse-mode evaluation of $f(g(x))$ }
+	\label{fig:reverse_simple_ast}
+\end{figure}
+
+Here we again see the primal, normal program execution of the function on the left, and then the reverse pass accumulation of the adjoints on the right.
+The resulting adjoint, $a_{1}$, is identical to the resulting forward-mode tangent $t_{3}$ from \autoref{fig:simple_ast}.
+The difference is that in this case, all the intermediate values and the partial derivatives need to be stored, whereas in forward-mode, each step relies solely on the previous tangent and primal values in the graph.
+
+The procedure becomes more complicated with less trivial, multi-arity functions.
+Consider the function example from \autoref{fig:ast}, shown in \autoref{fig:reverse_ast} now in reverse-mode.
+
+% \begin{figure}[t]
+% 	\centering
+% 	\begin{subfigure}{0.49\linewidth}
+% 		\centering
+% 		\begin{tikzpicture}[scale=0.8]
+% 			\tikzstyle{every node}=[font=\small]
+% 			\node (a) [value] at (0.5,0) {$a$};
+% 			\node (b) [value] at (1.5,0) {$b$};
+% 			\node (pow) [computation] at (0.5,-2) {$x^{2}$};
+% 			\node (sin) [computation] at (1.5,-2) {$\sin$};
+% 			\draw [->] (a) to node[align=left,left] {$p_{1}=a$} (pow);
+% 			\draw [->] (b) to node[align=left,right] {$p_{2}=b$}(sin);
+% 			\node (times) [computation] at (1,-4) {$*$};
+% 			\draw [->] (pow) to node[align=left,left,xshift=0pt] {$p_3=p_1^2$ \\
+% 				$\frac{\partial p_{3}}{\partial p_{1}} = 2p_{1}$
+% 			} (times);
+% 			\draw [->] (sin) to node[align=left,right,xshift=0pt,yshift=0pt] {$p_{4}=\sin(p_{2})$ \\
+% 				$\frac{\partial p_{4}}{\partial p_{2}}=\cos(p_{2})$
+% 			}(times);
+% 			\node (f) [value] at (1,-6) {$f(a,b)$};
+% 			\draw [->] (times) to node[left] {$p_{5}=p_{3}*p_{4}$}
+% 			node[align=left,right] {$\frac{\partial p_{5}}{\partial p_{3}} = p_{4}$ \\ $\frac{\partial p_{5}}{\partial p_{4}} = p_{3}$}
+% 			(f);
+% 		\end{tikzpicture}
+% 		\caption{Forward Sweep}
+% 	\end{subfigure}
+    
+% 	\begin{subfigure}{0.49\linewidth}
+% 		\centering
+% 		\begin{tikzpicture}[scale=0.8]
+% 			\tikzstyle{every node}=[font=\small]
+% 			\node (a) [value] at (0.5,0) {$a$};
+% 			\node (b) [value] at (1.5,0) {$b$};
+% 			\node (pow) [computation] at (0.5,-2) {$x^{2}$};
+% 			\node (sin) [computation] at (1.5,-2) {$\sin$};
+% 			\draw [->] (pow) to node[align=left,left] {$a_{1}=a_{3}\frac{\partial p_{3}}{\partial p_{1}}$} (a);
+% 			\draw [->] (sin) to node[align=left,right, xshift=0pt] {$a_{2}=a_{4}\frac{\partial p_{4}}{\partial p_{2}}$}(b);
+% 			\node (times) [computation] at (1,-4) {*};
+% 			\draw [->] (times) to node[align=left,left,xshift=0pt] {$a_{3} = a_{5}\frac{\partial p_{5}}{\partial p_{3}}$} (pow);
+% 			\draw [->] (times) to node[align=left,right,xshift=0pt] {$a_{4}=a_{5}\frac{\partial p_{5}}{\partial p_{4}}$} (sin);
+% 			\node (f) [value] at (1,-6) {$f(a,b)$};
+% 			\draw [->] (f) to node[left] {$a_{5}=1$} (times);
+% 		\end{tikzpicture}
+% 		\caption{Reverse Sweep}
+% 	\end{subfigure}
+    
+% 	\caption{Graph of reverse-mode evaluation of $f(a,b)$ }
+% 	\label{fig:reverse_ast}
+% \end{figure}
+
+Again, in the forward sweep, we collect primal values as well as partial derivates.
+Then, in the reverse-mode, we collect adjoints down every branch by multiplying the previous adjoint by the appropriate precomputed  partial derivates.
+This offers several advantages, the first of which is that in one pass, we have computed the full gradient.
+Additionally, we have done so with fewer operations than in the forward-mode.
+Often, this is a more efficient way of computing the gradient.
+However, the reverse sweep requires us to build the computation graph in memory and store intermediate values and partials, while forward-mode only requires the previous tangents and primals.
+This is a classic example of a memory-time complexity tradeoff.
+In general, for functions of the form $f: \R^{n} \rightarrow \R^{m}$ where $m \gg n$, forward-mode is preferred.
+However, for general optimization problems, reverse-mode is typically higher performance, as it solves $f: \R^{n} \rightarrow \R$ for a scalar cost function.
+Benchmarking to choose the right approach is required when the input and output dimensions have similar orders of magnitude.
+
+Efficient implementations of these algorithms have become commonplace due to their usage in training large machine learning models.
+For a more in-depth discussion on the field of AD and implementation details, see~\cite{baydinAutomaticDifferentiationMachine2017}.
