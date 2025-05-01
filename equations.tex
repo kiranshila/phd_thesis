@@ -1,29 +1,29 @@
 \section{Interferometer Survey Speed and Sensitivity} \label{sec:survey_speed}
 
-To derive the survey speed of a radio interferometer, we start with the radiometer equation:
+To derive the survey speed of a radio interferometer, we start with the radiometer equation,
 \begin{equation}
-    \sigma_T = \frac{T_\text{Sys}}{\sqrt{\Delta\nu\tau}}
+    \sigma_T = \frac{T_\text{Sys}}{\sqrt{\Delta\nu\tau}}\,.
 \end{equation}
-For system noise temperature $T_\text{Sys}$, bandwidth $\Delta\nu$, and integration time $\tau$, we can compute the RMS error (in Kelvin).
-If we want to know the signal-to-noise ratio for an observation of a point source, we can define the ratio of the source's induced antenna temperature $T_a$ over this RMS noise level
+For system noise temperature $T_\text{Sys}$, bandwidth $\Delta\nu$, and integration time $\tau$, we compute the RMS error (in Kelvin).
+If we want to know the signal-to-noise ratio for an observation of a point source, we define the ratio of the source's induced antenna temperature $T_a$ over this RMS noise level as
 \begin{equation}
-    \text{SNR} = \frac{T_a}{\sigma_T} = \frac{T_a}{T_\text{Sys}}\sqrt{\Delta\nu\tau}
+    \text{SNR} = \frac{T_a}{\sigma_T} = \frac{T_a}{T_\text{Sys}}\sqrt{\Delta\nu\tau}\,.
     \label{eq:radiometer_snr}
 \end{equation}
 Sources in the sky vary wildly in flux density, so to come up with a single metric, we can pick some arbitrary, minimum source flux density to set our SNR, $S_\nu$.
 This point source flux density induces an antenna temperature via
 \begin{equation}
-    T_a = \frac{S_\nu A_e}{2k_B}
+    T_a = \frac{S_\nu A_e}{2k_B}\,,
 \end{equation}
 where $A_e$ is the effective collecting area of the array and $k_B$ is Boltzmann's constant.
 For reflector-based antennas, the effective aperture is equal to the reflector's physical area, scaled by some aperture efficiency, $\eta_a$, typically in the \num{0.7}-range.
-We then multiply this by $N$ antennas to get the total effective collecting area for the entire array.
+We then multiply this by $N$ antennas to compute the total effective collecting area for the entire array.
 \begin{equation}
-    A_e = \frac{N\eta_a\pi D^2}{4}
+    A_e = \frac{N\eta_a\pi D^2}{4}\,.
 \end{equation}
-Now, we can find the integration time required to achieve an SNR of unity.
+Now, we find the integration time required to achieve an SNR of unity as
 \begin{equation}
-    \tau = \frac{1}{\Delta\nu}\left[\frac{8k_B T_\text{Sys}}{S_\nu N\eta_a\pi D^2}\right]^2
+    \tau = \frac{1}{\Delta\nu}\left[\frac{8k_B T_\text{Sys}}{S_\nu N\eta_a\pi D^2}\right]^2\,.
     \label{eq:integration_time}
 \end{equation}
 As this is the time required to survey one portion of the sky, the last missing piece is how much of the sky we surveyed in this pointing.
@@ -31,59 +31,59 @@ Again, for reflectors, we could use the full-width half-maximum in steradians, o
 For high-gain reflectors (as are used in radio astronomy), these are almost identical.
 For any antenna, the beam solid angle is defined as
 \begin{equation}
-    \Omega_B = \frac{\lambda^2}{A_e^\prime}
+    \Omega_B = \frac{\lambda^2}{A_e^\prime}\,,
 \end{equation}
 where $A_e^\prime$ here is the effective aperture (of the primary beam, not the total array).
-So, we can write
+So, we write
 \begin{equation}
-    \Omega_B = \frac{4\lambda^2}{\pi\eta_aD^2}
+    \Omega_B = \frac{4\lambda^2}{\pi\eta_aD^2}\,.
 \end{equation}
 Finally, we can define survey speed as the time required to survey a given beam solid angle to some fixed minimum point source flux density as
 \begin{equation}
-    \text{SS}~\text{(sr/s)} = \frac{\Omega_B}{\tau} = \eta_a\pi\Delta_\nu\left[\frac{\lambda S_\nu N D}{4k_B T_\text{Sys}}\right]^2
+    \text{SS}~\text{(sr/s)} = \frac{\Omega_B}{\tau} = \eta_a\pi\Delta_\nu\left[\frac{\lambda S_\nu N D}{4k_B T_\text{Sys}}\right]^2\,.
 \end{equation}
 If we take $S_\nu$ to be in Jy (\qty{1e-26}{\W/\Hz/\m^2}) and convert to deg$^2$ per hour, we can approximate this as
 \begin{equation}
-        \text{SS}~(\text{deg}^2/\text{hr}) \approx 1.217\eta_a\Delta_\nu\left[\frac{\lambda S_\nu N D}{T_\text{Sys}}\right]^2
+        \text{SS}~(\text{deg}^2/\text{hr}) \approx 1.217\eta_a\Delta_\nu\left[\frac{\lambda S_\nu N D}{T_\text{Sys}}\right]^2\,.
 \end{equation}
 The important implications of this relation are the quadratic terms in $\lambda$, $N$, $D$, and $T_\text{Sys}$, as these are all design parameters.
 
 In addition to survey speed, we can recast \autoref{eq:radiometer_snr} as a sensitivity metric.
-In other words, we can find what flux density ($S_\nu$) we can measure at a $1\sigma_T$-level in some fixed integration time $\tau$.
+In other words, we find what flux density ($S_\nu$) we can measure at a $1\sigma_T$-level in some fixed integration time $\tau$ via
 \begin{equation}
-    S_\nu~(\text{W}/\text{m}^2/\text{Hz}) = \frac{8k_BT_\text{Sys}}{\pi\eta_aD^2N\sqrt{\Delta_\nu\tau}}
+    S_\nu~(\text{W}/\text{m}^2/\text{Hz}) = \frac{8k_BT_\text{Sys}}{\pi\eta_aD^2N\sqrt{\Delta_\nu\tau}}\,.
 \end{equation}
 We can again simply this if we assume $\tau$ is one hour, our answer is in $\mu$Jy (\qty{1e-32}{\W/\Hz/\m^2}), and $\Delta_\nu$ is in GHz, we can write
 \begin{equation}
-    S_\nu~(\mu\text{Jy @ 1 hr}) \approx 1852\frac{T_\text{Sys}}{\eta_aD^2N\sqrt{\Delta_{\nu\text{(GHz)}}}}
+    S_\nu~(\mu\text{Jy @ 1 hr}) \approx 1852\frac{T_\text{Sys}}{\eta_aD^2N\sqrt{\Delta_{\nu\text{(GHz)}}}}\,.
 \end{equation}
 
-If we use some typical DSA-2000 numbers of $\Delta_\nu=$ \qty{1.3}{\GHz}, $D=$ \qty{5}{\m}, $N=$ \num{2000}, $\eta_a=$ \num{0.7}, $T_\text{Sys}=$ \qty{25}{\K}, at a center wavelength $\lambda$ of \qty{22}{\cm}, we find:
+If we use some typical DSA-2000 numbers of $\Delta_\nu=$ \qty{1.3}{\GHz}, $D=$ \qty{5}{\m}, $N=$ \num{2000}, $\eta_a=$ \num{0.7}, $T_\text{Sys}=$ \qty{25}{\K}, at a center wavelength $\lambda$ of \qty{22}{\cm}, we find
 \begin{align}
     \text{SS}~(\text{deg}^2/\text{hr @ 2}\mu\text{Jy}) &= 31.3 \\
-    S_\nu~(\mu\text{Jy @ 1 Hr}) &= 1.16
+    S_\nu~(\mu\text{Jy @ 1 Hr}) &= 1.16\,.
 \end{align}
 
 \section{Intermodulation Products} \label{sec:intermod}
 Given a voltage transfer function of some nonlinear RF component
 \begin{equation}
-    v_\text{Out} = f(v_\text{In})
+    v_\text{Out} = f(v_\text{In})\,,
 \end{equation}
 we can find the Taylor (Maclaurin) series expansion of the nonlinear $f$ to give us
 \begin{equation}
-    v_\text{Out} = \sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}v_\text{In}^n = a_0 + a_1v_\text{In} + a_2v_\text{In}^2 + a_3v_\text{In}^3 \dots
+    v_\text{Out} = \sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}v_\text{In}^n = a_0 + a_1v_\text{In} + a_2v_\text{In}^2 + a_3v_\text{In}^3 \dots\,,
     \label{eq:intermod_expansion}
 \end{equation}
 where the coefficients $a_0$, $a_1$, etc. are proportional to the $n$-th derivative of $f$.
-Consider an input $v_\text{In}$ composed of a sum of two tones close in frequency:
+Consider an input $v_\text{In}$ composed of a sum of two tones close in frequency,
 \begin{equation}
-    v_\text{In} = V_0(\cos{\omega_1t} + \cos{\omega_2t)}
+    v_\text{In} = V_0(\cos{\omega_1t} + \cos{\omega_2t)} \,.
 \end{equation}
-Plugging this into \autoref{eq:intermod_expansion}, we find
+Substituting into \autoref{eq:intermod_expansion}, we find
 \begin{align}
     v_\text{Out} = a_0 &+ a_1V_0(\cos{\omega_1t} + \cos{\omega_2t)} \\ &+ a_2V_0^2(\cos{\omega_1t} + \cos{\omega_2t)}^2 \\&+ a_3V_0^3(\cos{\omega_1t} + \cos{\omega_2t)}^3 \dots
 \end{align}
-Using trigonometric identities, we can expand this to
+Using trigonometric identities, we expand this to
 \begin{align}
 v_\text{Out} = a_0 &+ a_1V_0(\cos{\omega_1t + \cos{\omega_2t)}} \notag\\
     &+ \frac{a_2V_0^2}{2}(2\cos{(\omega_1+\omega_2)t} + 2\cos{(\omega_1-\omega_2)t}) \notag\\
@@ -102,7 +102,7 @@ v_\text{Out} = a_0 &+ a_1V_0(\cos{\omega_1t + \cos{\omega_2t)}} \notag\\
     3\cos{(\omega_1+2\omega_2)t} +
     3\cos{(2\omega_1+\omega_2)t}) \dots
 \end{align}
-Here, we can see that increasing powers from the series expansion leads to sum and difference frequencies of the form $n\omega_1 \pm m\omega_2$ for positive integers $m$ and $n$.
+Here, we see that increasing powers from the series expansion leads to sum and difference frequencies of the form $n\omega_1 \pm m\omega_2$ for positive integers $m$ and $n$.
 As the input voltage in the two tones increases, so do these so called ``intermodulation'' products.
 If the input power is small, these products will be well beneath the noise floor.
 However, as the power increases, the output power of the fundamental ($\cos{\omega_n t}$ increases linearly while the power in the intermodulation powers grow with the input voltage squared for the second-order terms and with the cube for the third-order terms.
@@ -112,49 +112,49 @@ The hypothetical power at which these intermodulation tones intersect are the $n
 \subsection{2nd Order Distortion}
 The total power delivered at either fundamental into a \qty{1}{\ohm} load is
 \begin{equation}
-    P_{\omega_{1}} = \frac{1}{2}a_1^2V_0^2
+    P_{\omega_{1}} = \frac{1}{2}a_1^2V_0^2\,,
 \end{equation}
 recalling that these voltage phasors are defined with peak magnitudes, and so power is defined as $1/2Re\{VI^*\}$.
 The total power delivered at one of the 2nd order mixing terms ($\cos{\omega_1\pm\omega_2}$) is
 \begin{equation}
-    P_{\omega_1+\omega_2} = \frac{1}{2}a_2^2V_0^4
+    P_{\omega_1+\omega_2} = \frac{1}{2}a_2^2V_0^4\,.
 \end{equation}
-The definition of the intercept point is when the powers at the fundamental and the intermodulation product are equal.
+The definition of the intercept point is when the powers at the fundamental and the intermodulation product are equal, given by
 \begin{equation}
-    \frac{1}{2}a_1^2V_{IP2}^2 = \frac{1}{2}a_2^2V_{IP2}^4
+    \frac{1}{2}a_1^2V_{IP2}^2 = \frac{1}{2}a_2^2V_{IP2}^4\,.
 \end{equation}
 Solving for $V_{IP2}$ yields
 \begin{equation}
-    V_{IP2} = \frac{a_1}{a_2}
+    V_{IP2} = \frac{a_1}{a_2}\,.
 \end{equation}
 We define the output intercept point as the power at the fundamental which leads to this intersection
 \begin{equation}
-    \text{OIP2} = P_{\omega_1}|_{V_0=V_{IP2}} = \frac{1}{2}a_1^2V_{IP2}^2 = \frac{a_1^4}{2a_2^2}
+    \text{OIP2} = P_{\omega_1}|_{V_0=V_{IP2}} = \frac{1}{2}a_1^2V_{IP2}^2 = \frac{a_1^4}{2a_2^2}\,.
 \end{equation}
 Finally, we can find that the power of the output intermodulation product can be rewritten in terms of the power of the fundamental and OIP2
 \begin{equation}
-    P_{\omega_1+\omega_2} = \frac{1}{2}a_2^2V_0^4 = \frac{\left(\frac{1}{2}a_1^2V_0^2\right)^2}{a_1^4(2a_2^2)^{-1}} = \frac{P_{\omega_{1}}^2}{\text{OIP2}}
+    P_{\omega_1+\omega_2} = \frac{1}{2}a_2^2V_0^4 = \frac{\left(\frac{1}{2}a_1^2V_0^2\right)^2}{a_1^4(2a_2^2)^{-1}} = \frac{P_{\omega_{1}}^2}{\text{OIP2}}\,,
     \label{eq:2nd_order_oip2_powers}
 \end{equation}
 or
 \begin{align}
     \text{OIP2}~(W) &= \frac{P_{\omega_{1}}^2}{P_{\omega_1+\omega_2}} \\
-    \text{OIP2}~(\text{dBm}) &= 2P_{\omega_{1}} - P_{\omega_1+\omega_2}
+    \text{OIP2}~(\text{dBm}) &= 2P_{\omega_{1}} - P_{\omega_1+\omega_2}\,.
 \end{align}
 
 \subsection{Cascaded Distortion}
-Shown in figure \fixme{fixme}, given two components with power gains $G_1$ and $G_2$ with output nth-order output intercept points $\text{OIP}n^\prime$ and $\text{OIP}n^{\prime\prime}$, we want to find the effect of combining their distortions.
+Given two components with power gains $G_1$ and $G_2$ with output nth-order output intercept points $\text{OIP}n^\prime$ and $\text{OIP}n^{\prime\prime}$, we want to find the effect of combining their distortions.
 As the tones are deterministic, the phase of the various intermodulation product impact the output.
 As such, we need to work out the cascade in voltages.
 
 Using the result from \autoref{eq:2nd_order_oip2_powers}, we can compute the output voltage of the 2nd order term as
 \begin{equation}
-    V_{\omega_1+\omega_2}^\prime = \sqrt{P_{\omega_1+\omega_2}^\prime Z_0} = P_{\omega_{1}}^\prime\sqrt{\frac{Z_0}{\text{OIP2}^\prime}}
+    V_{\omega_1+\omega_2}^\prime = \sqrt{P_{\omega_1+\omega_2}^\prime Z_0} = P_{\omega_{1}}^\prime\sqrt{\frac{Z_0}{\text{OIP2}^\prime}}\,.
 \end{equation}
 As the phase of these voltages is unknown, we can assume the worst-case of the distortion products adding in-phase.
 Therefore, the total 2nd-order distortion voltage at the output of the second component is
 \begin{equation}
-    V_{\omega_1+\omega_2}^{\prime \prime} = P_{\omega_{1}}^\prime\sqrt{\frac{G_2Z_0}{\text{OIP2}^\prime}} + P_{\omega_{1}}^{\prime \prime}\sqrt{\frac{Z_0}{\text{OIP2}^{\prime \prime}}}
+    V_{\omega_1+\omega_2}^{\prime \prime} = P_{\omega_{1}}^\prime\sqrt{\frac{G_2Z_0}{\text{OIP2}^\prime}} + P_{\omega_{1}}^{\prime \prime}\sqrt{\frac{Z_0}{\text{OIP2}^{\prime \prime}}}\,.
 \end{equation}
 As $P_{\omega_{1}}^{\prime \prime}=G_2P_{\omega_{1}}^{\prime}$, we have
 \begin{align}
@@ -164,7 +164,7 @@ As $P_{\omega_{1}}^{\prime \prime}=G_2P_{\omega_{1}}^{\prime}$, we have
     & =
     \left(
     \frac{1}{\sqrt{G_2\text{OIP2}^\prime}} + \frac{1}{\sqrt{\text{OIP2}^{\prime \prime}}}
-    \right)P_{\omega_{1}}^{\prime \prime}\sqrt{Z_0}
+    \right)P_{\omega_{1}}^{\prime \prime}\sqrt{Z_0}\,.
 \end{align}
 The total output distortion power is
 \begin{equation}
@@ -172,26 +172,26 @@ The total output distortion power is
     =    \left(
     \frac{1}{\sqrt{G_2\text{OIP2}^\prime}} + \frac{1}{\sqrt{\text{OIP2}^{\prime \prime}}}
     \right)^2(P_{\omega_{1}}^{\prime \prime})^2
-    = \frac{(P_{\omega_{1}}^{\prime \prime})^2}{\text{OIP2}}
+    = \frac{(P_{\omega_{1}}^{\prime \prime})^2}{\text{OIP2}}\,.
 \end{equation}
 Therefore the 2nd order intercept of the cascaded system with coherent products is
 \begin{equation}
     \text{OIP2} = \left(
     \frac{1}{\sqrt{G_2\text{OIP2}^\prime}} + \frac{1}{\sqrt{\text{OIP2}^{\prime \prime}}}
-    \right)^{-2}
+    \right)^{-2}\,.
 \end{equation}
 Although the worst case is useful for putting a bound on the distortion, in practical systems with many components, the phases between various stages may be randomly distributed.
-In that case, we can treat the contributions as incoherent and directly sum the powers of the intermodulation products.
+In that case, we treat the contributions as incoherent and directly sum the powers of the intermodulation products.
 \begin{equation}
     P_{\omega_1+\omega_2}^{\prime \prime} = G_2\frac{(P_{\omega_1}^{\prime})^2}{\text{OIP2}^{\prime}}+ \frac{(P_{\omega_1}^{\prime \prime})^2}{\text{OIP2}^{\prime \prime}} = \left(
     \frac{1}{G_2\text{OIP2}^{\prime}} + \frac{1}{\text{OIP2}^{\prime \prime}}
-    \right)(P_{\omega_1}^{\prime \prime})^2
+    \right)(P_{\omega_1}^{\prime \prime})^2\,.
 \end{equation}
-Again solving for the total cascaded 2nd order intercept, incoherently combined
+Again solving for the total cascaded 2nd order intercept, incoherently combined gives
 \begin{equation}
     \text{OIP2} = \left(
     \frac{1}{G_2\text{OIP2}^{\prime}} + \frac{1}{\text{OIP2}^{\prime \prime}}
-    \right)^{-1}
+    \right)^{-1}\,.
 \end{equation}
 
 The derivations for the 3rd order intercept can be found in~\cite{pozarMicrowaveEngineering2012}.

@@ -17,8 +17,8 @@ All this is to say that surveys are a key tool in modern astronomy and are consi
 In the optical, the Vera Rubin Observatory in Chile will soon conduct a massive all-sky survey~\cite{biancoOptimizationObservingCadence2021}, with a projected first light in July 2025.
 The recently launched SPHEREx satellite~\cite{crillSPHERExNASAsNearinfrared2020} will survey the near infrared and will be starting its survey soon.
 In the radio, the VLA Sky Survey (VLASS)~\cite{lacyKarlJanskyVery2020} is ongoing, imaging the whole sky visible to the VLA in New Mexico.
-This experiment builds off the success of previous VLA-based surveys\footnote{Which are some of the most scientifically successful experiments that the VLA has performed}, further improving sensitivity and resolution.
-While continuing to be successful, the speed at which VLASS images the sky is comparatively very slow.
+VLASS builds off the success of previous VLA-based surveys\footnote{Which are some of the most scientifically successful experiments that the VLA has performed}, further improving sensitivity and resolution.
+However, while the survey continues to be successful, the speed at which it images the sky pales in comparison to the other modern surveys.
 Rubin images \qty{10}{deg^2} every \qty{15}{\s} or \qty{2400}{deg^2/hr} (during the nighttime).
 SPHEREx will survey the entire sky once every six months, or a speed of \qty{5}{deg^2/hr}.
 Finally, VLASS operates at about \qty{0.01}{deg^2/hr}, while splitting time between the survey and other planned observations.
@@ -34,13 +34,13 @@ In the design of a survey instrument, the key metric is the speed at which we ca
 The faster we can make high-sensitivity maps, the faster we can get these maps in the hands of astronomers to do science.
 We can quantify this measure via survey speed, defined as the time required to map one patch of sky down to some fixed noise level
 \begin{equation}
-        \text{SS}~(\text{deg}^2/\text{hr}) \approx 1.217\eta_a\Delta_\nu\left[\frac{\lambda S_\nu N D}{T_\text{Sys}}\right]^2
+        \text{SS}~(\text{deg}^2/\text{hr}) \approx 1.217\eta_a\Delta_\nu\left[\frac{\lambda S_\nu N D}{T_\text{Sys}}\right]^2\,.
 \end{equation}
 This equation for the survey speed of reflector-based radio telescope arrays (derived in \autoref{sec:survey_speed}), depends on the number of antennas $N$, the system noise temperature $T_\text{Sys}$, the diameter of the dishes $D$, the aperture efficiency of the dishes $\eta_a$, the observation wavelength $\lambda$, the integration bandwidth $\Delta_\nu$, and the desired $1\sigma$ flux density $S_\nu$ in Jy.
 In essence, this metric combines the sensitivity of the instrument with how much of the sky it can see.
 One could also just ask about that sensitivity, given by
 \begin{equation}
-    S_\nu~(\mu\text{Jy @ 1 hr}) \approx 1852\frac{T_\text{Sys}}{\eta_aD^2N\sqrt{\Delta_{\nu\text{(GHz)}}}}
+    S_\nu~(\mu\text{Jy @ 1 hr}) \approx 1852\frac{T_\text{Sys}}{\eta_aD^2N\sqrt{\Delta_{\nu\text{(GHz)}}}}\,,
 \end{equation}
 which gives the RMS noise in $\mu$Jy in one hour of integration.
 The ideal instrument would have a minimal noise and a large collecting area, which corresponds to a high survey speed.
@@ -56,7 +56,7 @@ Using these metrics, we can compare the planned DSA-2000 performance against oth
 DSA-2000 will be composed of 2000, \qty{5}{\m} dishes operating at an aperture efficiency of about \num{0.7}, observing from \SIrange{0.7}{2}{\GHz} with a system noise temperature of about \qty{25}{\K}.
 For this comparison, we will look at DSA-110~\cite{raviDSA110OverviewFirst2023}, ASKAP~\cite{hotanAustralianSquareKilometre2021}, MeerKAT~\cite{jonasMeerKATRadioTelescope2018a}, CHORD~\cite{vanderlindeCanadianHydrogenObservatory2019}, 
 VLA~\cite{VLAObservationalStatus}, and ngVLA~\cite{NgVLAPerformanceEstimates}, shown in \autoref{fig:dsa2000_compare}.
-With these results, we can see that the DSA-2000 outperforms all instruments in this band in survey speed, with only ngVLA having higher sensitivity.
+From these results, it is clear that the proposed DSA-2000 will outperform all instruments in this band in survey speed, with only the ngVLA having higher sensitivity.
 This is not too surprising as the ngVLA is a multi-billion dollar project with large, cryogenically cooled receivers.
 If we quantify the science output of these instruments as proportional to their survey speed\footnote{A somewhat dubious claim, but good enough for this exercise}, and then try to predict science per dollar, we see a very different story.
 
@@ -89,15 +89,15 @@ Compare this to  ngVLA's much larger, cryogenically cooled antennas, which cost 
 % DSA-2000's antennas are pricier, which reduces the number that one could build with a fixed budget, but the tradeoff still improved survey speed per dollar.
 % For comparison, we include 15 ngVLA antennas, which is about what you could build with this fixed budget.
 
-Matching the ngVLA, we could add cryogenics to cool the DSA-2000 receiver to \qty{20}{\K}, which would cost about \$100k per antenna~\cite{daddarioAdvancedCryocoolersNext2017}.
-Simulations predict this will reduce our system noise temperature by \qty{7}{\K} to \qty{18}{\K}, as cooling only impacts the feed and LNA and there are still other sources of noise (the sky, spillover noise, etc. See \autoref{fig:tsys_contributions}).
-If each antenna costs around \$30k, we quadruple the cost of each antenna, while not even doubling the survey speed.% (\qty{32}{deg^2/hr} to \qty{63}{deg^2/hr}).
+To improve sensitivity, matching the ngVLA, we could add cryogenics to cool the DSA-2000 receiver to \qty{20}{\K}, which would cost about \$100k per antenna~\cite{daddarioAdvancedCryocoolersNext2017}.
+Simulations predict this will reduce our system noise temperature by \qty{7}{\K} to \qty{18}{\K}, as cooling only impacts the feed and LNA and there are still other sources of noise (the sky, spillover noise, etc., see \autoref{fig:tsys_contributions}).
+If each antenna costs around \$30k, adding cryogenics quadruples the cost, while not even doubling the survey speed.% (\qty{32}{deg^2/hr} to \qty{63}{deg^2/hr}).
 
 All of this leads to the conclusion that if you can build a high-performance, cheap antenna, build lots of them!
 And the key to an inexpensive antenna is not using cryogenics.
 As survey speed scales with $T_\text{Sys}^{-2}$, any reduction in system noise will dramatically increase the science per dollar of the instrument.
 The strong impact of reducing noise then motivates the work in this thesis, where reducing the system noise by even \qty{1}{\K} would save about \$1M in cost to maintain survey speed.
-Of all the contributions to $T_\text{Sys}$, currently the LNA is the largest (as shown in \autoref{fig:tsys_contributions}) which suggests where to spend effort to maximize the impact on the science.
+Of all the contributions to $T_\text{Sys}$, currently the LNA is the largest (as shown in \autoref{fig:tsys_contributions}), which suggests where to spend effort to maximize the impact on the science.
 
 \begin{figure}[ht!]
     \centering
@@ -128,15 +128,15 @@ As the signal from the sky is essentially incoherent noise, this result is a sta
 The surprising result is that there exists a relationship between the collection of all these correlation products (known as visibilities) and the image of the sky.
 This relationship is known as the van Cittert-Zernike theorem\footnote{Using a small angle approximation, which results in the Fourier relationship} and states
 \begin{equation}
-    V(\mathbf{r}_1,\mathbf{r}_2) \approx \iint_{-\infty}^{\infty}I(l,m)e^{-2\pi j(ul+vm)}dldm = \mathcal{F}\{I(l,m)\}
+    V(\mathbf{r}_1,\mathbf{r}_2) \approx \iint_{-\infty}^{\infty}I(l,m)e^{-2\pi j(ul+vm)}dldm = \mathcal{F}\{I(l,m)\}\,,
 \end{equation}
 where $V(\mathbf{r}_1,\mathbf{r}_2)$ is the visibility or mutual spatial coherence function given by the time average product of the received signal (electric field) from the pair of antennas at two points in space ($\mathbf{r}_1$ and $\mathbf{r}_2$)
 \begin{equation}
-    V(\mathbf{r}_1,\mathbf{r}_2) = \langle E(\mathbf{r}_1)E(\mathbf{r}_2)^*\rangle
+    V(\mathbf{r}_1,\mathbf{r}_2) = \langle E(\mathbf{r}_1)E(\mathbf{r}_2)^*\rangle\,,
 \end{equation}
 and $u$ and $v$ are the spatial differences between the two points\footnote{Ignoring changes in height $z$, which is something you might want to consider~\cite{cornwellProjectionNewAlgorithm}}
 \begin{equation}
-    \mathbf{r}_1 - \mathbf{r}_2 = \mathbf{u} = (x_1-x_2, y_1 - y_2) = (u,v)
+    \mathbf{r}_1 - \mathbf{r}_2 = \mathbf{u} = (x_1-x_2, y_1 - y_2) = (u,v)\,,
 \end{equation}
 and $I(l,m)$ is the intensity distribution (image) of the sky in a direction-cosine reference frame.
 All of this is to say that the inverse Fourier transform of the visibilities gives us the image of the sky!
@@ -151,7 +151,7 @@ All of this is to say that the inverse Fourier transform of the visibilities giv
 A problem then arises from the fact that we have not continuously sampled all the points in $u$ and $v$ as we have a discrete number of antennas and therefore a finite number of visibilities.
 Not only that, but there is a maximum distance that we can separate antennas.
 Combining these two shortcomings, we essentially image the sky through a diffraction-limited, shattered mirror.
-This imaging procedure is shown in \autoref{fig:radio_imaging} as Fourier pairs, where a sparse sampling of the Fourier-domain of the true image of the sky results in the measured, dirty image.
+This imaging procedure is shown in \autoref{fig:radio_imaging} as Fourier pairs, where a sparse sampling of the Fourier-domain of the true image results in the measured, dirty image.
 The dirty image itself is not usable for science, so we must attempt to recover the true image algorithmically.
 However, due to the sparse sampling of the $uv$ plane, this is an ill-posed inverse problem and does not have a simple solution.
 Various optimization-based strategies are used for this, perhaps the most popular being an iterative blind deconvolution algorithm called CLEAN~\cite{hogbomApertureSynthesisNonRegular1974}.
@@ -190,9 +190,9 @@ For DSA-2000, let us assume we observe \num{16000} frequency channels every \num
 If there are \num{2000} dual-polarized antennas and each visibility is an 8+8-bit complex number, that works out to a visibility data rate of \num{25.6} GB per second.
 Over a year at this rate, we would accumulate \num{0.8} exabytes of data\footnote{Or eight times the storage capacity of Data from Star Trek: The Next Generation}.
 The entirety of the Internet Archive\footnote{\url{https://archive.org/}} stores around \num{100} petabytes of data for real-time, global access at a cost of \$2.5M per month.
-At our data rate, that works out to \$300M per year, more than the construction cost of the array, just in storage!
+At our data rate, that totals \$300M per year, more than the construction cost of the array, just in storage!
 Not only that, but this rate would keep increasing as we accumulate more and more data as we continue to survey the sky.
-This cost is one of the primary reasons people have not built large arrays.
+This cost is one of the primary reasons why the community has not built large $N$ arrays.
 
 But here is the trick; at some point as $N$ increases, the $uv$ plane becomes complete enough where a simple inverse Fourier transform of the sampled visibilities results in a dirty image that requires little to no ``cleaning''.
 Therefore, we could build a deterministic pipeline to capture images of the sky in real time and store those images instead of the raw visibilities, saving many orders of magnitude in storage costs.
@@ -219,7 +219,7 @@ We start in \autoref{ch:lna_opt} with an overview of analytic formalisms surroun
 Having a collection of closed-form results that encompass the various performance metrics for an LNA are required for designing an optimization framework.
 \autoref{ch:lna} is a reproduction of an article that discusses the design of an improved room-temperature low noise amplifier for the DSA-2000, using the formalisms built in the previous chapter, and is my primary contribution.
 \autoref{ch:asp} discusses the complete analog signal path for DSA-2000, including the analysis, design, and implementation of a high-performance RF over fiber link and further enhancements to the LNA such as solid-state cooling and antenna impedance co-optimization.
-We finish with \autoref{ch:grex}, a reproduction of an article that describes the GReX instrument and new upper limits on galactic FRB populations.
+We finish with \autoref{ch:grex}, a reproduction of an article that describes the GReX instrument and new upper limits on galactic fast radio burst (FRB) populations.
 
 \begin{figure}[h!]
     \centering

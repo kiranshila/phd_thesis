@@ -47,13 +47,13 @@ Balancing this priority with other requirements such as input reflection, stabil
 	{\GS}{F(\FMin, R_n, \GOpt, \GS)}
 	{}{}
 	\addConstraint{G(\mathbf{S}, \GL, \GS)}{\leq \xi}
-	\label{eqn:optim}
+	\label{eqn:optim} \,,
 \end{mini}
 %
 where $F$ is the noise objective function, given here in the standard form of noise figure~\cite{gonzalezMicrowaveTransistorAmplifiers1997}, driven by the device's noise parameters via
 %
 \begin{equation}
-	F = \FMin + \frac{4R_{n}\left|\GS-\GOpt\right|^{2}}{Z_{0}\left|1+\GOpt\right|^{2}\left(1-\left|\GS\right|^{2}\right)}
+	F = \FMin + \frac{4R_{n}\left|\GS-\GOpt\right|^{2}}{Z_{0}\left|1+\GOpt\right|^{2}\left(1-\left|\GS\right|^{2}\right)} \,,
 	\label{eq:noise}
 \end{equation}
 %
@@ -68,7 +68,7 @@ This is distinct from ``goal-based'' optimization, where the optimizer attempts 
 If we were only interested in constraining input reflection, we would define $\xi$ as a maximum allowed magnitude of $\GA$ and write our constraint function as
 %
 \begin{equation}
-	G \leq\left|\GA\right|_{\text{Max}}
+	G \leq\left|\GA\right|_{\text{Max}} \,.
 	\label{eq:ga_constraint}
 \end{equation}
 Alternatively, we could constrain the gain to be greater than some value, either case being a trade-off between power and noise match.
@@ -148,7 +148,7 @@ For this wideband LNA design, one formulation is to minimize the average noise
 	{\GS(\nuvec)}{\frac{1}{N}\sum_{i=1}^{N} F(\nu_i)}
 	{}{}
 	\addConstraint{G(\nuvec)}{\leq\left|\GA\right|_{\text{Max}}}
-	\label{eqn:optim_geo}
+	\label{eqn:optim_geo} \,.
 \end{mini}
 %
 Here, the minimizer and constraints are vector-valued.
@@ -161,12 +161,12 @@ If, for example, this matching network were a series UTL with electrical length 
 	{l, Z_L}{\frac{1}{N}\sum_{i=1}^{N} F({\GS}(\nu_i))}
 	{}{}
 	\addConstraint{G({\GS}(\nuvec))}{\leq\left|\GA\right|_{\text{Max}}}
-	\label{eqn:optim_line}
+	\label{eqn:optim_line} \,,
 \end{mini}
 %
 where
 \begin{equation}
-	\GS(\nu) = Z_0\left[\frac{Z_L +jZ_0\tan\left(\beta(\nu)l\right)}{Z_0 +jZ_L\tan\left(\beta(\nu)l\right)}\right]
+	\GS(\nu) = Z_0\left[\frac{Z_L +jZ_0\tan\left(\beta(\nu)l\right)}{Z_0 +jZ_L\tan\left(\beta(\nu)l\right)}\right] \,.
 \end{equation}
 %
 Here, we reduce the dimensionality of the problem from $N$ to two as we are solving for a single length and characteristic impedance.
@@ -185,10 +185,10 @@ Computing these values efficiently is essential to the performance of this desig
 Traditionally, there are three ways one can generate gradients for optimization.
 First, if the cost expression is simple, one could solve the gradient by hand by applying the rules of calculus.
 However, if the expression were large or if it were a black-box with unknown internals, deriving an expression for the gradients might be impossible.
-The second approach is to approximate the gradient via finite-differencing each term using the standard form:
+The second approach is to approximate the gradient via finite-differencing each term using the standard form,
 %
 \begin{equation}
-	\frac{df}{dx} \approx \frac{f(x+h)-f(x)}{h}
+	\frac{df}{dx} \approx \frac{f(x+h)-f(x)}{h} \,.
 	\label{eqn:finite-difference}
 \end{equation}
 %
@@ -244,7 +244,7 @@ This arises from the fact that for a general transmission line, the voltage and 
 While closed-form solutions exist for special cases, such as exponential tapers~\cite{wheelerTransmissionLinesExponential1939}, a standard approach for analyzing arbitrary NTLs is to discretize the line into many small lengths of constant impedance sections.
 
 We represent the discretized approximation of an NTL as the multiplication of ABCD (cascade) matrices of the uniform sections~\cite{maoAnalysisTimeResponse1992}.
-For a uniform transmission line of length $l$ with characteristic impedance $Z_c$ and propagation constant $\gamma$, this matrix is:
+For a uniform transmission line of length $l$ with characteristic impedance $Z_c$ and propagation constant $\gamma$, this matrix is
 %
 \begin{equation}
 	\mathbf{A}\left(Z_c,\gamma,l\right) = \begin{bmatrix}
@@ -253,14 +253,14 @@ For a uniform transmission line of length $l$ with characteristic impedance $Z_c
 	\end{bmatrix} = \begin{bmatrix}
 		A & B \\
 		C & D
-	\end{bmatrix}
+	\end{bmatrix} \,.
 	\label{eqn:tl_abcd}
 \end{equation}
 %
-For an NTL defined by a characteristic impedance and propagation constant profile with position, $Z_c(x), \gamma(x)$, and total length $L$, we pick a discretization of $M$ points and compute:
+For an NTL defined by a characteristic impedance and propagation constant profile with position, $Z_c(x), \gamma(x)$, and total length $L$, we pick a discretization of $M$ points and compute
 %
 \begin{equation}
-	\mathbf{A}_{\text{NTL}} \approx \prod_{i=1}^{M} \mathbf{A}\left(Z_c\left( iL/M \right),\gamma\left(iL/M \right),L/M \right)
+	\mathbf{A}_{\text{NTL}} \approx \prod_{i=1}^{M} \mathbf{A}\left(Z_c\left( iL/M \right),\gamma\left(iL/M \right),L/M \right) \,.
 	\label{eqn:ntl_casc}
 \end{equation}
 %
@@ -273,12 +273,12 @@ We convert this final ABCD matrix into scattering parameters via
 		A + B/Z_0 - CZ_0 + D & 2(AD-BC)          \\
 		2                            & -A + B/Z_0 - CZ_0 + D
 	\end{bmatrix}
-    \endgroup
+    \endgroup \,,
 	\label{eqn:a2s}
 \end{equation}
 where
 \begin{equation}
-	\zeta = A + B/Z_0 + CZ_0 + D
+	\zeta = A + B/Z_0 + CZ_0 + D \,,
 \end{equation}
 and $Z_0$ is the reference impedance for the S parameters and reflection coefficients in the design.
 
@@ -339,11 +339,11 @@ While the simple cascade method that we use suffers from the $M$-discretization,
 To perform the direct geometry optimization, we start with the per-unit-length equivalent resistance, inductance, conductance, and capacitance (RLGC) model of a transmission line with
 %
 \begin{equation}
-	\gamma = \sqrt{\left(R + j \omega L\right) \left( G + j \omega C\right)}
+	\gamma = \sqrt{\left(R + j \omega L\right) \left( G + j \omega C\right)} \,,
 \end{equation}
-%
+and
 \begin{equation}
-	Z_{c} = \sqrt{\left(R + j \omega L\right) / \left( G + j \omega C\right)}
+	Z_{c} = \sqrt{\left(R + j \omega L\right) / \left( G + j \omega C\right)} \,.
 \end{equation}
 %
 This model captures all the effects of loss and dispersion.
@@ -358,7 +358,7 @@ We apply the NTL direct optimization method to our LNA problem via
 	{L, \mathbf{W}}{\frac{1}{N}\sum_{i=1}^{N} F({\GS}(\nu_i, \mathbf{W}, L))}
 	{}{}
 	\addConstraint{G({\GS}(\nuvec, \mathbf{W}, L))}{\leq\left|\GA\right|_{\text{Max}}}
-	\label{eqn:optim_ntl}
+	\label{eqn:optim_ntl} \,,
 \end{mini}
 %
 where $\GS$ follows \eqref{eqn:a2s}.
@@ -368,7 +368,6 @@ This proves to be critical to the design, as the insertion loss of the input mat
 The direct optimization approach balances the two sources of noise to result in an optimal design.
 
 \section{Implementation} \label{sec:impl}
-% Comment 1.3 - Explain why the changes in structure warrant a fair comparison
 To design the improved amplifier, we started with the design from~\cite{shiRoomTemperatureLowNoiseAmplifier2023}.
 We make use of the same \qty{400}{\nm} x \qty{200}{\um} gate, four-finger transistor from Diramics~\cite{DiramicsPH2004F50} at a slightly lower bias of $V_d$=\qty{0.5}{\V}, $I_d$=\qty{16}{\mA} to match the vendor's updated model.
 To improve linearity, we changed to a two-stage design versus the three-stage design of the prior work.
@@ -540,18 +539,18 @@ Instead, we follow the submerged termination with a long length of line before e
 In our case, we used an \qty{8}{\cm} section of RG402 coax connected to a submerged \qty{1}{\m} coil and termination.
 We used a heater, shown in \autoref{fig:cold_load}, to maintain the warm end of the coax at ambient temperature.
 Finally, we attached a previously characterized N to SMA adapter to the warm end of the cold load to mate with the N-type socket on the constructed LNA.
-This setup, shown in \autoref{fig:cold_load}, has a frequency-dependent output noise following this curve-fit result:
+This setup, shown in \autoref{fig:cold_load}, has a frequency-dependent output noise following the curve-fit result
 %
 \begin{equation}
-	T_{\text{Cold}}\,\text{(K)} = 78.0824 + 1.2425f_{\si{\GHz}} -  0.1166f_{\si{\GHz}}^{2}
+	T_{\text{Cold}}\,\text{(K)} = 78.0824 + 1.2425f_{\si{\GHz}} -  0.1166f_{\si{\GHz}}^{2} \,.
 	\label{eqn:tcold}
 \end{equation}
 %
 The error on this result depends on uncertainty in the length of the coax between the surface of the \LN{} and the heater (nominally \qty{8}{\cm}), the warm-side temperature (nominally \qty{297}{\K}), and the atmospheric pressure (nominally \qty{100}{\kilo\Pa}).
-Assuming worst-case errors of \qty{\pm 1}{\cm} of length, \qty{\pm 2}{\C} in temperature, and \qty{\pm 0.5}{\kilo\Pa} of pressure, we derive an error model in frequency:
+Assuming worst-case errors of \qty{\pm 1}{\cm} of length, \qty{\pm 2}{\C} in temperature, and \qty{\pm 0.5}{\kilo\Pa} of pressure, we derive an error model in frequency,
 %
 \begin{equation}
-	\delta T_{\text{Cold}}\,\text{(K)} = 0.0776 + 0.0568f_{\si{\GHz}} - 0.0048f_{\si{\GHz}}^{2}
+	\delta T_{\text{Cold}}\,\text{(K)} = 0.0776 + 0.0568f_{\si{\GHz}} - 0.0048f_{\si{\GHz}}^{2} \,.
 	\label{eqn:terr}
 \end{equation}
 
@@ -592,7 +591,7 @@ Next, we evaluate the impact due to changes in available gain.
 Given a termination at the input of a noisy receiver, shown in \autoref{fig:yfac_schematic}, the output noise is given by
 %
 \begin{equation}
-	P = k_{b}BD_\text{RX}G_\text{A}\left(T_{H,C}+T_\text{A}\right)
+	P = k_{b}BD_\text{RX}G_\text{A}\left(T_{H,C}+T_\text{A}\right) \,,
 	\label{eq:noise_power}
 \end{equation}
 %
@@ -601,10 +600,10 @@ where $k_b$ is Boltzmann's constant, $B$ is the noise equivalent bandwidth, $D_\
 \begin{equation}
 	G_{\text{A}} = \frac
 	{|S_{21}|^{2}\left(1 - |\Gamma_{S}|^{2}\right)}
-	{|1-\Gamma_{S}\Gamma_A|^{2} \left(1-|S_{22}|^2\right)}
+	{|1-\Gamma_{S}\Gamma_A|^{2} \left(1-|S_{22}|^2\right)} \,.
 \end{equation}
 %
-We write our expression for the measured Y-factor as a ratio of these hot and cold powers \cite{hpnoise1983}, but now without the assumption that $G_\text{A}$ remains constant due to the impact of $\Gamma_{\text{S}_{H,C}}$:
+We write our expression for the measured Y-factor as a ratio of these hot and cold powers \cite{hpnoise1983}, but now without the assumption that $G_\text{A}$ remains constant due to the impact of $\Gamma_{\text{S}_{H,C}}$,
 %
 \begin{equation}
 	Y =
@@ -618,7 +617,7 @@ We write our expression for the measured Y-factor as a ratio of these hot and co
 	\frac
 	{T_\text{H} + T_\text{A}}
 	{T_\text{C} + T_\text{A}}
-	\right)
+	\right) \,,
 	\label{eq:y_fac}
 \end{equation}
 %
@@ -634,14 +633,14 @@ where the correction $C$ due to mismatch error~\cite{heymannGuideNoiseMicrowave2
 	%\left(
 	\frac
 	{|1-\Gamma_{S_\text{C}}\Gamma_A|^{2}}
-	{|1-\Gamma_{S_\text{H}}\Gamma_A|^{2}}
+	{|1-\Gamma_{S_\text{H}}\Gamma_A|^{2}} \,.
 	%\right)
 \end{equation}
 %
-Solving \eqref{eq:y_fac} for $T_\text{A}$ yields:
+Solving \eqref{eq:y_fac} for $T_\text{A}$ yields
 %
 \begin{equation}
-	T_\text{A} = \frac{T_{\text{H}}-T_{\text{C}}Y/C}{Y/C-1}
+	T_\text{A} = \frac{T_{\text{H}}-T_{\text{C}}Y/C}{Y/C-1} \,.
 	\label{eqn:corrected_yfac}
 \end{equation}
 %
@@ -658,13 +657,13 @@ For our amplifier and terminations, $C$ is between \num{0.974} and \num{1.019}, 
 
 Additionally, we have uncertainty in the reflection coefficient measurements, which results in uncertainty in this correction factor.
 Following the datasheet for our network analyzer~\cite{Keysight2Port4Port2018}, we create a curve-fit function to describe the uncertainty in both phase and magnitude, as a function of magnitude.
-For our frequency range and IF bandwidth, these are:
+For our frequency range and IF bandwidth, these are
 \begin{equation}
-	\delta|\Gamma| = 0.004 + 0.006|\Gamma|\left(1+|\Gamma|\right)
+	\delta|\Gamma| = 0.004 + 0.006|\Gamma|\left(1+|\Gamma|\right) \,,
 \end{equation}
 and
 \begin{equation}
-	\delta\arg(\Gamma) = \frac{0.25^{\circ}}{|\Gamma|} + 0.5^{\circ}
+	\delta\arg(\Gamma) = \frac{0.25^{\circ}}{|\Gamma|} + 0.5^{\circ} \,.
 \end{equation}
 
 Finally, we need to remove the noise of the receiver.
